@@ -104,7 +104,7 @@ model Recipe {
 
     name             String
     description      String?
-    requiredUtensils String?
+    requiredUtensils String[]
     difficulty       RecipeDifficulty
     steps            RecipeStep[]
     labels           RecipeLabel[]
@@ -126,8 +126,6 @@ enum RecipeStepType {
 
 model RecipeStep {
     id          String         @id @default(cuid())
-    createdAt   DateTime       @default(now())
-    updatedAt   DateTime       @updatedAt
     description String
     duration    Int
     stepType    RecipeStepType
