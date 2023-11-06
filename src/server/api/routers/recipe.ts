@@ -60,7 +60,7 @@ export const recipeRouter = createTRPCRouter({
       });
     }),
 
-  getLatest: protectedProcedure
+  getLatest: publicProcedure
     .input(z.object({ take: z.number().min(1) }))
     .query(({ ctx, input }) => {
       return ctx.db.recipe.findMany({
@@ -83,7 +83,7 @@ export const recipeRouter = createTRPCRouter({
       });
     }),
 
-  getAll: protectedProcedure.query(({ ctx }) => {
+  getAll: publicProcedure.query(({ ctx }) => {
     return ctx.db.recipe.findMany({
       orderBy: { createdAt: "desc" },
       where: {},
