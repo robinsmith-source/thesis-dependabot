@@ -1,6 +1,5 @@
 import { api } from "~/trpc/server";
 import Link from "next/link";
-import { ViewRecipe } from "~/app/_components/view-recipe";
 
 export default async function Page({ params }: { params: { id: string } }) {
   const user = await api.user.get.query({ id: params.id });

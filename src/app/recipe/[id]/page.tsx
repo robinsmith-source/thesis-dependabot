@@ -1,4 +1,6 @@
 import { api } from "~/trpc/server";
+import Difficulty from "~/app/_components/Difficulty";
+import RecipeStep from "~/app/_components/RecipeStep";
 
 export default async function Page({ params }: { params: { id: string } }) {
   const recipe = await api.recipe.get.query({ id: params.id });
@@ -7,19 +9,22 @@ export default async function Page({ params }: { params: { id: string } }) {
   }
 
   return (
-    <main className="container mx-auto">
-      <h1 className="text-lg font-bold">{recipe.name}</h1>
+    <main className="container mx-auto p-4">
+      <img
+        className="h-96 w-2/3 rounded-lg object-cover shadow-lg"
+        src="https://placekitten.com/500/300"
+        alt="Recipe header"
+      />
+      <div className="flex items-center gap-2">
+        <h1 className="text-lg font-bold">{recipe.name}</h1>
+        <Difficulty difficulty={recipe.difficulty} />
+      </div>
       <p>{recipe.description}</p>
-      <ul>
-        {recipe.steps.map((step, i) => (
-          <li key={step.id}>
-            <h2 className="font-semibold">
-              {i + 1} {step.description}
-            </h2>
-            <p>{step.duration}</p>
-          </li>
+      <div className="grid  grid-cols-2">
+        {recipe.steps.map((step) => (
+          <RecipeStep step={step} key={step.id} />
         ))}
-      </ul>
+      </div>
     </main>
   );
 }
