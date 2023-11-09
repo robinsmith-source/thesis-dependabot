@@ -1,41 +1,59 @@
 import { api } from "~/trpc/server";
-import RecipeStep from "~/app/_components/RecipeStep";
-import { Card, CardHeader } from "@nextui-org/card";
 import React from "react";
-import { Image, Link } from "@nextui-org/react";
+import {
+  Card,
+  Image,
+  Link,
+  Table,
+  TableBody,
+  TableCell,
+  TableColumn,
+  TableHeader,
+  TableRow,
+} from "@nextui-org/react";
 import NextImage from "next/image";
+import { notFound } from "next/navigation";
+import RecipeStep from "./RecipeStep";
+import IngredientTable from "./IngredientTable";
 
 export default async function Page({ params }: { params: { id: string } }) {
   const recipe = await api.recipe.get.query({ id: params.id });
   if (!recipe) {
-    return <div>404</div>;
+    notFound();
   }
 
   return (
     <main>
-      <Card className="h-96">
-        <CardHeader className="absolute bottom-1 z-10 flex-col !items-start">
-          <h1 className="text-2xl font-medium text-white">{recipe.name}</h1>
-          <p className="text-white">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div>
+          <h1 className="text-2xl font-bold">
+            {recipe.name} (
+            <span className="capitalize">
+              {recipe.difficulty.toLowerCase()}
+            </span>
+            )
+          </h1>
+          <p>
             created by{" "}
             <Link href={`/user/${recipe.author.id}`}>{recipe.author.name}</Link>
           </p>
-        </CardHeader>
-        <Image
-          as={NextImage}
-          width={500}
-          height={300}
-          removeWrapper
-          alt="recipe header"
-          className="z-0 h-full w-full object-cover"
-          src="https://placekitten.com/500/300"
-        />
-      </Card>
+          <p>{recipe.description}</p>
+        </div>
+        <Card className="row-span-2 h-96 place-self-center">
+          <Image
+            as={NextImage}
+            width={500}
+            height={300}
+            removeWrapper
+            alt="recipe header"
+            className="z-0 h-full w-full object-cover"
+            src="https://placekitten.com/500/300"
+          />
+        </Card>
+        <IngredientTable recipeSteps={recipe.steps} />
+      </div>
 
-      <div className="p-4">
-        <p className="py-4 text-center text-xl font-medium">
-          {recipe.description}
-        </p>
+      <div>
         <table>
           <thead>
             <tr>

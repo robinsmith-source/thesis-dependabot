@@ -1,4 +1,5 @@
 import type { Prisma } from "@prisma/client";
+import { convertUnit } from "../../utils";
 
 type RecipeStep = Prisma.RecipeStepGetPayload<{
   include: { ingredients: true };
@@ -11,7 +12,8 @@ export default function RecipeStep({ step }: { step: RecipeStep }) {
         <ul>
           {step.ingredients.map((ingredient) => (
             <li key={ingredient.id}>
-              {ingredient.quantity} {ingredient.unit} {ingredient.name}
+              {ingredient.quantity} {convertUnit(ingredient.unit)}{" "}
+              {ingredient.name}
             </li>
           ))}
         </ul>
@@ -19,7 +21,8 @@ export default function RecipeStep({ step }: { step: RecipeStep }) {
       <td className="py-2 align-top">
         <p className="font-medium">{step.description}</p>
         <div className="pt-0.5 text-gray-500">
-          {step.duration} {step.duration === 1 ? "minute" : "minutes"}
+          {step.duration} {step.duration === 1 ? "minute" : "minutes"}{" "}
+          <span className="capitalize">({step.stepType.toLowerCase()})</span>
         </div>
       </td>
     </tr>
