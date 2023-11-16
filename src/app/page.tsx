@@ -1,6 +1,6 @@
 import { api } from "~/trpc/server";
 import RecipeCard from "~/app/_components/RecipeCard"
-import { Input } from '@nextui-org/react';
+import {Button, Input, Link} from '@nextui-org/react';
 
 export default async function Home() {
   const featuredRecipes = await api.recipe.getFeaturedRecipes.query({
@@ -9,16 +9,16 @@ export default async function Home() {
 
     return (
         <main className="flex flex-col items-center">
-            <div className="mb-4">
+            <div className="w-full flex flex-col items-center justify-center mb-4">
                 {/* Goose chef logo */}
-                <img
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img className="w-24 h-24 object-contain mb-4"
                     src="/images/Logo_round_V2.png"
                     alt="Logo"
-                    className="w-24 h-24 mb-2 object-contain"
                 />
-            </div>
-            <div className="w-full md:w-1/2 mb-4">
-                <Input
+                <div className="flex flex-col items-end w-[40rem]">
+                <Link href={"/recipes/public/advanced"} color="secondary">Advanced</Link>
+                <Input className="mb-4"
                     type="text"
                     //value={searchQuery}
                     //onChange={(e) => setSearchQuery(e.target.value)}
@@ -29,7 +29,8 @@ export default async function Home() {
                     fullWidth
                 />
             </div>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+            </div>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 mt-6">
             {featuredRecipes ? (
               featuredRecipes.map((recipe) => (
                 <RecipeCard recipeId={recipe.id} key={recipe.id} />
