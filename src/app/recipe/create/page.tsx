@@ -5,7 +5,7 @@ import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 
-import TagInput from "rsuite/TagInput";
+import TagInput from "./tagInput";
 import { api } from "~/trpc/react";
 import "rsuite/dist/rsuite-no-reset.min.css";
 
@@ -108,7 +108,7 @@ export default function Page() {
           )}
         />
 
-        <Controller
+        {/* <Controller
           control={control}
           name="tags"
           render={({ field, fieldState }) => (
@@ -123,6 +123,12 @@ export default function Page() {
               {fieldState.error?.message}
             </div>
           )}
+        />*/}
+
+        <Controller
+          control={control}
+          name="tags"
+          render={() => <TagInput control={control} register={register} />}
         />
 
         <Button color="primary" onClick={handleSubmit(onSubmit)}>
