@@ -26,9 +26,11 @@ export default function Page() {
       }),
   });
 
-  const { register, handleSubmit, control, reset } = useForm<Recipe>({
-    resolver: zodResolver(schema),
-  });
+  const { register, handleSubmit, control, reset, getValues } = useForm<Recipe>(
+    {
+      resolver: zodResolver(schema),
+    },
+  );
 
   const mutation = api.recipe.create.useMutation({
     onSuccess: () => {
@@ -128,7 +130,13 @@ export default function Page() {
         <Controller
           control={control}
           name="tags"
-          render={() => <TagInput control={control} register={register} />}
+          render={() => (
+            <TagInput
+              control={control}
+              register={register}
+              getValues={getValues}
+            />
+          )}
         />
 
         <Button color="primary" onClick={handleSubmit(onSubmit)}>

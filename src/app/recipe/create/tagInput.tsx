@@ -1,16 +1,26 @@
 import { Chip, Input } from "@nextui-org/react";
 import { useState } from "react";
-import { Control, useFieldArray, UseFormRegister } from "react-hook-form";
+import {
+  Control,
+  useFieldArray,
+  UseFormGetValues,
+  UseFormRegister,
+} from "react-hook-form";
 import { Recipe } from "@prisma/client";
 
 interface TagInputProps {
   control: Control<Recipe>;
-  register: UseFormRegister<Recipe>; // Update with the actual type if needed
+  register: UseFormRegister<Recipe>;
+  getValues: UseFormGetValues<Recipe>;
 }
-export default function TagInput({ control, register }: TagInputProps) {
+export default function TagInput({
+  control,
+  register,
+  getValues,
+}: TagInputProps) {
   const { fields, append, remove } = useFieldArray({
     control,
-    name: "tags", // This should match the name used in the form
+    name: "tags",
   });
 
   const [inputValue, setInputValue] = useState<string>("");
@@ -28,7 +38,7 @@ export default function TagInput({ control, register }: TagInputProps) {
 
   const addTag = () => {
     if (inputValue.trim() !== "") {
-      append({ tag: inputValue.trim() });
+      append(inputValue.trim());
       setInputValue("");
     }
   };
@@ -49,13 +59,13 @@ export default function TagInput({ control, register }: TagInputProps) {
       <div className="flex gap-2">
         {fields.map((field, index) => (
           <Chip
-            key={index}
+            key={field.id}
             onClose={() => handleClose(index)}
             color="secondary"
             variant="faded"
             {...register(`tags.${index}`)}
           >
-            {field.tag}
+            {getValues(`tags.${index}`)}
           </Chip>
         ))}
       </div>
