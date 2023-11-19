@@ -37,8 +37,14 @@ export default function TagInput() {
     remove(tagToRemove);
   };
 
-  // @ts-ignore Unfortunately due to the way zod validation works this is an array of potential errors or null
-  const errorMessage = fieldState?.error?.filter((e) => !!e)?.[0]?.message;
+  let errorMessage = "";
+  if (Array.isArray(fieldState.error)) {
+    errorMessage = fieldState.error?.find((e) => !!e)?.message as string;
+  } else if (fieldState.error) {
+    errorMessage = fieldState.error?.message as string;
+  } else {
+    errorMessage = "";
+  }
 
   return (
     <>
@@ -51,7 +57,7 @@ export default function TagInput() {
         value={inputValue}
         onChange={handleInputChange}
         onKeyDown={handleInputKeyDown}
-        isInvalid={!!fieldState?.invalid && errorMessage}
+        isInvalid={!!fieldState?.invalid}
         errorMessage={errorMessage}
         variant="bordered"
         startContent={
