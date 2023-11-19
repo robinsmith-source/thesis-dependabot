@@ -7,7 +7,6 @@ import * as z from "zod";
 
 import TagInput from "./tagInput";
 import { api } from "~/trpc/react";
-import "rsuite/dist/rsuite-no-reset.min.css";
 
 export default function Page() {
   const schema = z.object({
@@ -122,22 +121,6 @@ export default function Page() {
             )}
           />
 
-          {/* <Controller
-          control={control}
-          name="tags"
-          render={({ field, fieldState }) => (
-            <div>
-              <TagInput
-                trigger={["Enter", "Space", "Comma"]}
-                placeholder="Enter tags"
-                style={{ width: 300 }}
-                menuStyle={{ width: 300 }}
-                {...field}
-              />
-              {fieldState.error?.message}
-            </div>
-          )}
-        />*/}
           <Controller
             control={methods.control}
             name="tags"
