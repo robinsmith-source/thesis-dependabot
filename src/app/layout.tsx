@@ -6,8 +6,9 @@ import { headers } from "next/headers";
 import { TRPCReactProvider } from "~/trpc/react";
 import React from "react";
 import { Providers } from "~/app/providers";
-import { getServerAuthSession } from "~/server/auth";
+import { getServerSession } from "next-auth";
 import MainNavbar from "~/app/_components/MainNavbar";
+import SessionProvider from "~/app/_components/SessionProvider";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -25,19 +26,21 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await getServerAuthSession();
+  const session = await getServerSession();
 
   return (
     <html lang="en">
       <body
         className={`font-sans ${inter.variable} min-h-screen bg-background text-foreground`}
       >
-        <Providers>
-          <MainNavbar session={session} />
-          <TRPCReactProvider headers={headers()}>
-            <div className="mx-auto max-w-screen-xl p-8">{children}</div>
-          </TRPCReactProvider>
-        </Providers>
+        <SessionProvider session={session}>
+          <Providers>
+            <MainNavbar session={session} />
+            <TRPCReactProvider headers={headers()}>
+              <div className="mx-auto max-w-screen-xl p-8">{children}</div>
+            </TRPCReactProvider>
+          </Providers>
+        </SessionProvider>
       </body>
     </html>
   );
