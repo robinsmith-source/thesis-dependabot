@@ -1,5 +1,4 @@
 "use client";
-
 import {
   Avatar,
   Button,
@@ -51,13 +50,14 @@ function LoginBar({ session }: { session: Session }) {
     </Dropdown>
   );
 }
+
 import NextImage from "next/image";
 
 export default function MainNavbar({ session }: { session: Session | null }) {
   const pathname = usePathname();
 
   return (
-    <Navbar maxWidth="xl" className="">
+    <Navbar maxWidth="xl">
       <NavbarBrand>
         <Link href="/">
           <Image
@@ -68,7 +68,22 @@ export default function MainNavbar({ session }: { session: Session | null }) {
             alt="Logo"
           />
         </Link>
+        <Button href="/" as={Link} size="lg" variant="light">
+          Home
+        </Button>
+        <Dropdown>
+          <DropdownTrigger>
+            <Button size="lg" variant="light">
+              Explore
+            </Button>
+          </DropdownTrigger>
+          <DropdownMenu aria-label="Static Actions">
+          <DropdownItem key="Recipes" href="/recipes/public" as={Link}>Recipes</DropdownItem>
+          <DropdownItem key="Users" href="/users" as={Link}>Users</DropdownItem>
+          </DropdownMenu>
+        </Dropdown>
       </NavbarBrand>
+
 
       <NavbarContent as="div" justify="end">
         {session ? (
