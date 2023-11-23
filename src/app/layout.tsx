@@ -6,9 +6,9 @@ import { headers } from "next/headers";
 import { TRPCReactProvider } from "~/trpc/react";
 import React from "react";
 import { Providers } from "~/app/providers";
-import { getServerSession } from "next-auth";
 import MainNavbar from "~/app/_components/MainNavbar";
 import SessionProvider from "~/app/_components/SessionProvider";
+import { getServerAuthSession } from "~/server/auth";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -22,8 +22,11 @@ export const metadata = {
 };
 
 export default async function RootLayout({
-  children}: { children: React.ReactNode; }) {
-  const session = await getServerSession();
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const session = await getServerAuthSession();
 
   return (
     <html lang="en">
