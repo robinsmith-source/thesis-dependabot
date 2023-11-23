@@ -41,6 +41,7 @@ export const recipeRouter = createTRPCRouter({
       });
     }),
 
+  /*
   getFeaturedRecipes: publicProcedure
     .input(z.object({ take: z.number().min(1).max(10) }))
     .query(({ ctx, input }) => {
@@ -53,6 +54,47 @@ export const recipeRouter = createTRPCRouter({
         },
       });
     }),
+   */
+
+  getLatestRecipes: publicProcedure
+      .input(z.object({ take: z.number().min(1).max(50) }))
+      .query(({ ctx, input }) => {
+          return ctx.db.recipe.findMany({
+              orderBy: { createdAt: "desc" },
+              where: {},
+              take: input.take,
+              select: {
+                  id: true,
+              },
+          });
+      }),
+
+  getRecipesAdvanced: publicProcedure
+      .input(z.object({
+
+          take: z.number().min(1).max(50),
+          name: z.string().optional(),
+          difficulty: z.enum(["EASY", "MEDIUM", "HARD", "EXPERT"]).optional(),
+          labels: z.array(z.string()).optional(),
+          // tags: z.array(z.string()).optional(),
+          author: z.string().optional()}))
+      .query(({ ctx, input }) => {
+            return ctx.db.recipe.findMany({
+
+                take: input.take,
+                orderBy: { createdAt: "desc" },
+                where: {
+                    name: {contains: input.name},
+                    difficulty: input.difficulty,
+                    labels: { every: {name: {in: input.labels } }},
+                    // tags:  { hasSome: input.tags },
+                    author: { name: { contains: input.author } }
+                },
+                select: {
+                    id: true
+                },
+            })
+      }),
 
   getAll: publicProcedure.query(({ ctx }) => {
     return ctx.db.recipe.findMany({
