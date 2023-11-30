@@ -5,6 +5,7 @@ import {
   protectedProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
+import { utapi } from "~/server/uploadthing";
 
 export const recipeRouter = createTRPCRouter({
   get: publicProcedure
@@ -162,6 +163,20 @@ export const recipeRouter = createTRPCRouter({
       );
 
       return recipe.id;
+    }),
+
+  deleteRecipeImage: protectedProcedure
+    .input(z.object({ key: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      // later this should check for existing recipes, make sure the user matches and then remove the link and then delete it 
+      // for now just check it doesn't exist and then delete it
+      const existingRecipe = await ctx.db.recipe.findFirst({
+        where: { images: { has: input.key } },
+      })
+      // make sure there is no recipe with this image
+      if (existingRecipe) throw new Error("Image is used by a recipe");
+
+      await utapi.deleteFiles(input.key);
     }),
 
   updateRecipe: protectedProcedure

@@ -136,7 +136,6 @@ export default function Page() {
                   isRequired
                   label="Recipe name"
                   placeholder="My tasty Pizza"
-                  variant="bordered"
                   isInvalid={!!fieldState.error}
                   errorMessage={fieldState.error?.message}
                 />
@@ -151,7 +150,6 @@ export default function Page() {
                   {...field}
                   isRequired
                   label="Recipe Difficulty"
-                  variant="bordered"
                   isInvalid={!!fieldState.error}
                   errorMessage={fieldState.error?.message}
                   selectedKeys={[field.value]}
@@ -177,7 +175,6 @@ export default function Page() {
                   minRows={2}
                   label="Recipe Description"
                   placeholder="My grandma used to make this pizza for me ..."
-                  variant="bordered"
                   {...methods.register("description", { required: false })}
                   isInvalid={!!fieldState.error}
                   errorMessage={fieldState.error?.message}

@@ -39,9 +39,10 @@ export default function TagInput() {
 
   useEffect(() => {
     if (Array.isArray(fieldState.error)) {
-      setErrorMessage(fieldState.error?.find((e) => !!e)?.message || "");
+      // eslint-disable-next-line
+      setErrorMessage(fieldState.error?.find((e) => !!e)?.message ?? "");
     } else if (fieldState.error) {
-      setErrorMessage(fieldState.error?.message || "");
+      setErrorMessage(fieldState.error?.message ?? "");
     } else setErrorMessage("");
   }, [fieldState.error]);
 
@@ -60,7 +61,6 @@ export default function TagInput() {
           onKeyDown={handleInputKeyDown}
           isInvalid={!!fieldState?.invalid}
           errorMessage={errorMessage}
-          variant="bordered"
           startContent={
             fields && fields.length !== 0 ? (
               <div className="flex items-center gap-2">
