@@ -3,12 +3,88 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function main() {
-  if (process.env.VERCEL_ENV === "production") {
-    console.log("Running in production mode, skipping seeding");
-    return;
+  await seedRecipeLabels();
+  if (process.env.VERCEL_ENV !== "production") {
+    await seedUserRecipes();
   }
+}
 
-  await prisma.user.upsert({
+async function seedRecipeLabels() {
+  await prisma.recipeLabelCategory.upsert({
+    where: { name: "Cuisine" },
+    update: {},
+    create: {
+      name: "Cuisine",
+      RecipeLabel: {
+        create: [
+          {
+            name: "American",
+          },
+          {
+            name: "Chinese",
+          },
+          {
+            name: "French",
+          },
+          {
+            name: "Indian",
+          },
+          {
+            name: "Italian",
+          },
+          {
+            name: "Japanese",
+          },
+          {
+            name: "Mexican",
+          },
+          {
+            name: "Thai",
+          },
+          {
+            name: "Vietnamese",
+          },
+        ],
+      },
+    },
+  });
+
+  await prisma.recipeLabelCategory.upsert({
+    where: { name: "Diet" },
+    update: {},
+    create: {
+      name: "Diet",
+      RecipeLabel: {
+        create: [
+          {
+            name: "Gluten-Free",
+          },
+          {
+            name: "Keto",
+          },
+          {
+            name: "Low-Carb",
+          },
+          {
+            name: "Low-Fat",
+          },
+          {
+            name: "Paleo",
+          },
+          {
+            name: "Vegan",
+          },
+          {
+            name: "Vegetarian",
+          },
+        ],
+      },
+    },
+  });
+}
+
+async function seedUserRecipes() {
+  +(await prisma.user.upsert({
     where: { email: "testUser@example.com" },
     update: {},
     create: {
@@ -22,14 +98,16 @@ async function main() {
             name: "Spaghetti Carbonara",
             description:
               "A classic Italian pasta dish with creamy egg sauce and crispy bacon.",
-            requiredUtensils: [
-              "Large pot",
-              "Skillet",
-              "Bowl",
-              "Wooden Spoon",
-              "Colander",
-            ],
             difficulty: "MEDIUM",
+            images: [],
+            labels: {
+              connect: [
+                {
+                  name: "Italian",
+                },
+              ],
+            },
+            tags: ["Creamy", "Pasta", "Family Favorite"],
             steps: {
               create: [
                 {
@@ -145,14 +223,19 @@ async function main() {
             name: "Grilled Chicken Salad",
             description:
               "A healthy and delicious salad with grilled chicken and fresh veggies.",
-            requiredUtensils: [
-              "Grill",
-              "Salad Bowl",
-              "Tongs",
-              "Knife",
-              "Cutting Board",
-            ],
             difficulty: "EASY",
+            images: [],
+            labels: {
+              connect: [
+                {
+                  name: "Gluten-Free",
+                },
+                {
+                  name: "Low-Carb",
+                },
+              ],
+            },
+            tags: ["Light Meal", "Summer Salad", "Grilled"],
             steps: {
               create: [
                 {
@@ -242,14 +325,24 @@ async function main() {
             name: "Pasta Primavera",
             description:
               "A colorful pasta dish with fresh spring vegetables and a creamy sauce.",
-            requiredUtensils: [
-              "Large Pot",
-              "Skillet",
-              "Bowl",
-              "Wooden Spoon",
-              "Colander",
-            ],
             difficulty: "MEDIUM",
+            images: [],
+            labels: {
+              connect: [
+                {
+                  name: "Italian",
+                },
+                {
+                  name: "Vegetarian",
+                },
+              ],
+            },
+            tags: [
+              "Spring Dish",
+              "Vegetable Pasta",
+              "Colorful",
+              "Weeknight Dinner",
+            ],
             steps: {
               create: [
                 {
@@ -358,14 +451,21 @@ async function main() {
             name: "Classic Beef Stew",
             description:
               "A hearty and comforting beef stew with tender meat and a rich, flavorful broth.",
-            requiredUtensils: [
-              "Dutch Oven",
-              "Knife",
-              "Cutting Board",
-              "Large Bowl",
-              "Wooden Spoon",
-            ],
             difficulty: "EXPERT",
+            images: [],
+            labels: {
+              connect: [
+                {
+                  name: "American",
+                },
+              ],
+            },
+            tags: [
+              "Slow Cooked",
+              "Winter Comfort",
+              "Family Favorite",
+              "One-Pot Meal",
+            ],
             steps: {
               create: [
                 {
@@ -490,13 +590,23 @@ async function main() {
             name: "Spaghetti Aglio e Olio",
             description:
               "A simple yet flavorful Italian pasta dish with garlic, olive oil, and red pepper flakes.",
-            requiredUtensils: [
-              "Large Pot",
-              "Skillet",
-              "Wooden Spoon",
-              "Colander",
-            ],
             difficulty: "EASY",
+            labels: {
+              connect: [
+                {
+                  name: "Italian",
+                },
+                {
+                  name: "Vegetarian",
+                },
+              ],
+            },
+            tags: [
+              "Classic",
+              "Garlic Lovers",
+              "Easy Dinner",
+              "Weeknight Pasta",
+            ],
             steps: {
               create: [
                 {
@@ -575,13 +685,24 @@ async function main() {
             name: "Homemade Margherita Pizza",
             description:
               "A classic and simple Italian pizza with fresh tomatoes, mozzarella, basil, and olive oil.",
-            requiredUtensils: [
-              "Pizza Stone or Baking Sheet",
-              "Rolling Pin",
-              "Knife",
-              "Cutting Board",
-            ],
             difficulty: "EASY",
+            images: [],
+            labels: {
+              connect: [
+                {
+                  name: "Italian",
+                },
+                {
+                  name: "Vegetarian",
+                },
+              ],
+            },
+            tags: [
+              "Margherita",
+              "Homemade Pizza",
+              "Fresh Ingredients",
+              "Family Favorite",
+            ],
             steps: {
               create: [
                 {
@@ -657,10 +778,360 @@ async function main() {
               ],
             },
           },
+          {
+            name: "Vegetarian Stir-Fry",
+            description:
+              "A quick and healthy vegetarian stir-fry with a colorful mix of vegetables and tofu.",
+            difficulty: "EASY",
+            labels: {
+              connect: [
+                {
+                  name: "Vegetarian",
+                },
+              ],
+            },
+            tags: [
+              "Quick Meal",
+              "Meatless Monday",
+              "Asian Inspired",
+              "Colorful",
+            ],
+            steps: {
+              create: [
+                {
+                  description:
+                    "Heat a wok or large skillet over medium-high heat. Add a tablespoon of vegetable oil.",
+                  stepType: "PREP",
+                  duration: 5,
+                  ingredients: {
+                    create: [
+                      {
+                        name: "Vegetable Oil",
+                        quantity: 1,
+                        unit: "TABLESPOON",
+                      },
+                    ],
+                  },
+                },
+                {
+                  description:
+                    "Add diced tofu to the hot wok and stir-fry until golden brown on all sides.",
+                  stepType: "COOK",
+                  duration: 8,
+                  ingredients: {
+                    create: [
+                      {
+                        name: "Tofu",
+                        quantity: 200,
+                        unit: "GRAM",
+                      },
+                    ],
+                  },
+                },
+                {
+                  description:
+                    "Add a mix of colorful vegetables, such as bell peppers, broccoli, and snap peas. Stir-fry until the vegetables are tender-crisp.",
+                  stepType: "COOK",
+                  duration: 5,
+                  ingredients: {
+                    create: [
+                      {
+                        name: "Bell Peppers",
+                        quantity: 1,
+                      },
+                      {
+                        name: "Broccoli Florets",
+                        quantity: 1,
+                        unit: "CUP",
+                      },
+                      {
+                        name: "Snap Peas",
+                        quantity: 1,
+                        unit: "CUP",
+                      },
+                    ],
+                  },
+                },
+                {
+                  description:
+                    "In a small bowl, mix soy sauce, sesame oil, and a pinch of sugar. Pour the sauce over the stir-fry and toss to combine.",
+                  stepType: "MIX",
+                  duration: 3,
+                  ingredients: {
+                    create: [
+                      {
+                        name: "Soy Sauce",
+                        quantity: 2,
+                        unit: "TABLESPOON",
+                      },
+                      {
+                        name: "Sesame Oil",
+                        quantity: 1,
+                        unit: "TEASPOON",
+                      },
+                      {
+                        name: "Sugar",
+                        quantity: 1,
+                        unit: "TEASPOON",
+                      },
+                    ],
+                  },
+                },
+                {
+                  description:
+                    "Serve the vegetarian stir-fry over cooked rice or noodles. Garnish with chopped green onions and sesame seeds.",
+                  stepType: "SERVE",
+                  duration: 3,
+                  ingredients: {
+                    create: [
+                      {
+                        name: "Green Onions",
+                        quantity: 2,
+                        unit: "TABLESPOON",
+                      },
+                      {
+                        name: "Sesame Seeds",
+                        quantity: 1,
+                        unit: "TEASPOON",
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+          {
+            name: "Fruit Smoothie",
+            description: "A refreshing and easy-to-make fruit smoothie.",
+            difficulty: "EASY",
+            labels: {
+              connect: [{ name: "Vegan" }, { name: "Gluten-Free" }],
+            },
+            steps: {
+              create: [
+                {
+                  description:
+                    "Blend together your favorite fruits with yogurt and ice cubes.",
+                  stepType: "MIX",
+                  duration: 5,
+                  ingredients: {
+                    create: [
+                      { name: "Assorted Fruits", quantity: 300, unit: "GRAM" },
+                      { name: "Yogurt", quantity: 500, unit: "GRAM" },
+                      { name: "Ice Cubes", quantity: 10, unit: "PIECE" },
+                    ],
+                  },
+                },
+                {
+                  description: "Pour into a glass and enjoy!",
+                  stepType: "SERVE",
+                  duration: 2,
+                },
+              ],
+            },
+          },
+          {
+            name: "Beef Stir-Fry with Broccoli",
+            description:
+              "A savory beef stir-fry with fresh broccoli and a flavorful sauce.",
+            difficulty: "MEDIUM",
+            labels: {
+              connect: [{ name: "Chinese" }],
+            },
+            steps: {
+              create: [
+                {
+                  description:
+                    "Slice beef thinly and marinate in soy sauce and cornstarch.",
+                  stepType: "PREP",
+                  duration: 20,
+                  ingredients: {
+                    create: [
+                      { name: "Beef", quantity: 300, unit: "GRAM" },
+                      { name: "Soy Sauce", quantity: 2, unit: "TABLESPOON" },
+                      { name: "Cornstarch", quantity: 1, unit: "TABLESPOON" },
+                    ],
+                  },
+                },
+                {
+                  description:
+                    "Blanch broccoli in boiling water. Drain and set aside.",
+                  stepType: "COOK",
+                  duration: 5,
+                  ingredients: {
+                    create: [{ name: "Broccoli", quantity: 1, unit: "CUP" }],
+                  },
+                },
+                {
+                  description:
+                    "Stir-fry marinated beef until browned. Add broccoli and sauce.",
+                  stepType: "COOK",
+                  duration: 10,
+                  ingredients: {
+                    create: [
+                      { name: "Sauce", quantity: 1, unit: "CUP" },
+                      { name: "Additional Ingredients", quantity: 1 },
+                    ],
+                  },
+                },
+                {
+                  description: "Serve over rice and garnish with sesame seeds.",
+                  stepType: "SERVE",
+                  duration: 3,
+                  ingredients: {
+                    create: [
+                      { name: "Sesame Seeds", quantity: 1, unit: "TEASPOON" },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+          {
+            name: "Avocado Toast with Poached Egg",
+            description:
+              "A trendy and satisfying snack featuring creamy avocado on toasted bread with a perfectly poached egg.",
+            difficulty: "MEDIUM",
+            labels: {
+              connect: [{ name: "Low-Fat" }, { name: "Vegetarian" }],
+            },
+            tags: ["Quick Breakfast", "Brunch"],
+            steps: {
+              create: [
+                {
+                  description:
+                    "Toast slices of whole-grain bread until golden brown.",
+                  stepType: "COOK",
+                  duration: 5,
+                  ingredients: {
+                    create: [{ name: "Whole-Grain Bread", quantity: 2 }],
+                  },
+                },
+                {
+                  description:
+                    "Mash ripe avocado and spread it onto the toasted bread slices.",
+                  stepType: "PREP",
+                  duration: 5,
+                  ingredients: {
+                    create: [{ name: "Ripe Avocado", quantity: 1 }],
+                  },
+                },
+                {
+                  description:
+                    "Poach eggs until the whites are set but the yolks remain runny.",
+                  stepType: "COOK",
+                  duration: 4,
+                  ingredients: {
+                    create: [{ name: "Eggs", quantity: 2 }],
+                  },
+                },
+                {
+                  description:
+                    "Place a poached egg on each avocado toast. Season with salt and pepper.",
+                  stepType: "SEASON",
+                  duration: 3,
+                  ingredients: {
+                    create: [
+                      { name: "Salt", quantity: 1, unit: "TEASPOON" },
+                      { name: "Pepper", quantity: 1, unit: "TEASPOON" },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+          {
+            name: "Caprese Skewers",
+            description:
+              "A refreshing and bite-sized snack with cherry tomatoes, fresh mozzarella, and basil.",
+            difficulty: "EASY",
+            labels: {
+              connect: [{ name: "Italian" }, { name: "Vegetarian" }],
+            },
+            tags: ["Appetizer", "Quick Bite"],
+            steps: {
+              create: [
+                {
+                  description:
+                    "Thread one cherry tomato, one mozzarella ball, and one basil leaf onto each skewer.",
+                  stepType: "PREP",
+                  duration: 10,
+                  ingredients: {
+                    create: [
+                      { name: "Cherry Tomatoes", quantity: 20 },
+                      { name: "Fresh Mozzarella Balls", quantity: 20 },
+                      { name: "Fresh Basil Leaves", quantity: 20 },
+                      {
+                        name: "Balsamic Glaze",
+                        quantity: 1,
+                        unit: "TABLESPOON",
+                      },
+                    ],
+                  },
+                },
+                {
+                  description: "Drizzle with balsamic glaze before serving.",
+                  stepType: "SERVE",
+                  duration: 2,
+                },
+              ],
+            },
+          },
+          {
+            name: "Hummus and Veggie Wraps",
+            description:
+              "A healthy and satisfying snack with whole wheat wraps, hummus, and colorful vegetables.",
+            difficulty: "EASY",
+            labels: {
+              connect: [{ name: "Vegetarian" }, { name: "Low-Fat" }],
+            },
+            tags: ["Quick Lunch", "On-the-go"],
+            steps: {
+              create: [
+                {
+                  description:
+                    "Spread a generous layer of hummus on a whole wheat wrap.",
+                  stepType: "PREP",
+                  duration: 3,
+                  ingredients: {
+                    create: [
+                      { name: "Hummus", quantity: 4, unit: "TABLESPOON" },
+                      { name: "Whole Wheat Wrap", quantity: 1 },
+                    ],
+                  },
+                },
+                {
+                  description:
+                    "Add sliced cucumbers, cherry tomatoes, red bell peppers, and spinach leaves.",
+                  stepType: "PREP",
+                  duration: 5,
+                  ingredients: {
+                    create: [
+                      { name: "Cucumbers", quantity: 1, unit: "PIECE" },
+                      { name: "Cherry Tomatoes", quantity: 1, unit: "PIECE" },
+                      { name: "Red Bell Peppers", quantity: 1, unit: "PIECE" },
+                      { name: "Spinach Leaves", quantity: 500, unit: "GRAM" },
+                    ],
+                  },
+                },
+                {
+                  description:
+                    "Roll up the wrap tightly and slice into bite-sized pieces.",
+                  stepType: "PREP",
+                  duration: 3,
+                },
+                {
+                  description: "Secure with toothpicks and serve.",
+                  stepType: "SERVE",
+                  duration: 2,
+                },
+              ],
+            },
+          },
         ],
       },
     },
-  });
+  }));
 }
 
 main()

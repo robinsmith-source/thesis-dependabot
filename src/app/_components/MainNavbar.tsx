@@ -16,6 +16,7 @@ import {
 import NextLink from "next/link";
 import type { Session } from "next-auth";
 import { useSession } from "next-auth/react";
+import ThemeSwitcher from "~/app/_components/ThemeSwitcher";
 import NextImage from "next/image";
 
 function LoginBar({ session }: { session: Session }) {
@@ -44,6 +45,9 @@ function LoginBar({ session }: { session: Session }) {
             as={NextLink} key="settings" href={`/user/${session.user.id}`}>
           My Profile
         </DropdownItem>
+        <DropdownItem as={NextLink} key="create-recipe" href={`/recipe/create`}>
+          Create Recipe
+        </DropdownItem>
         <DropdownItem
             as={NextLink} key="logout" color="danger" href={"/api/auth/signout"}>
           Log Out
@@ -68,8 +72,8 @@ export default function MainNavbar() {
           />
         </NextLink>
       </NavbarBrand>
-
       <NavbarContent as="div" justify="end">
+        <ThemeSwitcher />
         {session ? (
           <LoginBar session={session} />
         ) : (

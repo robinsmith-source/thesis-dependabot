@@ -5,6 +5,7 @@ import {
   protectedProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
+import { utapi } from "~/server/uploadthing";
 
 export const recipeRouter = createTRPCRouter({
   get: publicProcedure
@@ -120,19 +121,49 @@ export const recipeRouter = createTRPCRouter({
     .input(
       z.object({
         name: z.string().min(1),
-        description: z.string().optional(),
-        requiredUtensils: z.array(z.string()),
+        description: z.string().nullable(),
         difficulty: z.enum(["EASY", "MEDIUM", "HARD", "EXPERT"]),
+        images: z.array(z.string()),
+        tags: z
+          .array(
+            z
+              .string({ invalid_type_error: "Tags must be strings" })
+              .min(1)
+              .regex(/^[a-z]+$/, "Tags can only contain lowercase characters"),
+          )
+          .max(10, "A recipe can only have 10 tags")
+          .refine((items) => new Set(items).size === items.length, {
+            message: "Must be an array of unique strings",
+          }),
         steps: z.array(
           z.object({
             description: z.string(),
             duration: z.number().min(0),
-            stepType: z.enum(["PREP", "COOK", "REST"]),
+            stepType: z.enum([
+              "PREP",
+              "COOK",
+              "REST",
+              "SEASON",
+              "SERVE",
+              "MIX",
+            ]),
             ingredients: z.array(
               z.object({
                 name: z.string().min(1),
                 quantity: z.number().min(1),
-                unit: z.string().optional(),
+                unit: z
+                  .enum([
+                    "GRAM",
+                    "KILOGRAM",
+                    "LITER",
+                    "MILLILITER",
+                    "TEASPOON",
+                    "TABLESPOON",
+                    "CUP",
+                    "PINCH",
+                    "PIECE",
+                  ])
+                  .nullable(),
               }),
             ),
           }),
@@ -140,33 +171,54 @@ export const recipeRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      return ctx.db.recipe.create({
+      const recipe = await ctx.db.recipe.create({
         data: {
           name: input.name,
-          description: input.name,
-          requiredUtensils: { set: input.requiredUtensils },
+          description: input.description,
           difficulty: input.difficulty,
-          steps: {
-            createMany: {
-              data: input.steps.map((step) => ({
-                description: step.description,
-                duration: step.duration,
-                stepType: step.stepType,
-                ingredients: {
-                  createMany: {
-                    data: step.ingredients.map((ingredient) => ({
-                      name: ingredient.name,
-                      quantity: ingredient.quantity,
-                      unit: ingredient.unit,
-                    })),
-                  },
-                },
-              })),
-            },
-          },
+          tags: input.tags,
+          images: input.images,
           author: { connect: { id: ctx.session.user.id } },
         },
       });
+
+      await Promise.all(
+        input.steps.map((step) => {
+          return ctx.db.recipeStep.create({
+            data: {
+              recipe: { connect: { id: recipe.id } },
+              description: step.description,
+              duration: step.duration,
+              stepType: step.stepType,
+              ingredients: {
+                createMany: {
+                  data: step.ingredients?.map((ingredient) => ({
+                    name: ingredient.name,
+                    quantity: ingredient.quantity,
+                    unit: ingredient.unit,
+                  })),
+                },
+              },
+            },
+          });
+        }),
+      );
+
+      return recipe.id;
+    }),
+
+  deleteRecipeImage: protectedProcedure
+    .input(z.object({ key: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      // later this should check for existing recipes, make sure the user matches and then remove the link and then delete it 
+      // for now just check it doesn't exist and then delete it
+      const existingRecipe = await ctx.db.recipe.findFirst({
+        where: { images: { has: input.key } },
+      })
+      // make sure there is no recipe with this image
+      if (existingRecipe) throw new Error("Image is used by a recipe");
+
+      await utapi.deleteFiles(input.key);
     }),
 
   updateRecipe: protectedProcedure
@@ -175,7 +227,6 @@ export const recipeRouter = createTRPCRouter({
         id: z.string().cuid(),
         name: z.string().min(1),
         description: z.string().optional(),
-        requiredUtensils: z.array(z.string()),
         difficulty: z.enum(["EASY", "MEDIUM", "HARD", "EXPERT"]),
         steps: z.array(
           z.object({
@@ -186,7 +237,19 @@ export const recipeRouter = createTRPCRouter({
               z.object({
                 name: z.string().min(1),
                 quantity: z.number().min(1),
-                unit: z.string().optional(),
+                unit: z
+                  .enum([
+                    "GRAM",
+                    "KILOGRAM",
+                    "LITER",
+                    "MILLILITER",
+                    "TEASPOON",
+                    "TABLESPOON",
+                    "CUP",
+                    "PINCH",
+                    "PIECE",
+                  ])
+                  .nullable(),
               }),
             ),
           }),
@@ -201,7 +264,6 @@ export const recipeRouter = createTRPCRouter({
         data: {
           name: input.name,
           description: input.description,
-          requiredUtensils: { set: input.requiredUtensils },
           difficulty: input.difficulty,
           steps: {
             updateMany: {

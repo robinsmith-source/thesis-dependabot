@@ -12,6 +12,10 @@ const config = {
         protocol: "https",
         hostname: "placekitten.com",
       },
+      {
+        protocol: "https",
+        hostname: "utfs.io",
+      }
     ],
   },
 };
