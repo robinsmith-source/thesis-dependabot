@@ -1,10 +1,13 @@
 import { api } from "~/trpc/server";
 import React from "react";
-import { Card, Chip, Image, Link } from "@nextui-org/react";
+import { Button, Card, CardBody, Chip, Image, Link } from "@nextui-org/react";
 import NextImage from "next/image";
+import NextLink from "next/link";
 import { notFound } from "next/navigation";
 import RecipeStep from "./RecipeStep";
 import IngredientTable from "./IngredientTable";
+import { getServerAuthSession } from "~/server/auth";
+import { FaPenToSquare } from "react-icons/fa6";
 
 export default async function Page({ params }: { params: { id: string } }) {
   const recipe = await api.recipe.get.query({ id: params.id });
@@ -12,19 +15,27 @@ export default async function Page({ params }: { params: { id: string } }) {
     notFound();
   }
 
+  const session = await getServerAuthSession();
+
   return (
     <main>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
-          <h1 className="text-2xl font-bold">
-            {recipe.name} (
+          <h1 className="flex items-center gap-2 text-2xl font-bold">
+            {recipe.name}
             <span className="capitalize">
-              {recipe.difficulty.toLowerCase()}
+              ({recipe.difficulty.toLowerCase()})
             </span>
-            )
+
+            {recipe.authorId === session?.user.id && (
+              <Button isIconOnly as={NextLink} color="secondary" href={"/edit"}>
+                <FaPenToSquare />
+              </Button>
+            )}
           </h1>
+
           <p>
-            created by{" "}
+            created by <br />
             <Link color="secondary" href={`/user/${recipe.author.id}`}>
               {recipe.author.name}
             </Link>
@@ -36,17 +47,17 @@ export default async function Page({ params }: { params: { id: string } }) {
           </div>
           <p>{recipe.description}</p>
         </div>
-        <Card className="row-span-2 h-96 place-self-center">
-          <Image
-            as={NextImage}
-            width={500}
-            height={300}
-            removeWrapper
-            alt="recipe header"
-            className="z-0 h-full w-full object-cover"
-            src="https://placekitten.com/500/300"
-          />
-        </Card>
+        <div className="flex flex-wrap gap-2">
+          {recipe.images?.map((image) => (
+            <Image
+              as={NextImage}
+              src={`https://utfs.io/f/${image}`}
+              key={image}
+              width={200}
+              height={200}
+            />
+          ))}
+        </div>
         <IngredientTable recipeSteps={recipe.steps} />
       </div>
 
