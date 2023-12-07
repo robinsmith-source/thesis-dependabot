@@ -42,21 +42,6 @@ export const recipeRouter = createTRPCRouter({
       });
     }),
 
-  /*
-    getFeaturedRecipes: publicProcedure
-      .input(z.object({ take: z.number().min(1).max(10) }))
-      .query(({ ctx, input }) => {
-        return ctx.db.recipe.findMany({
-          orderBy: { createdAt: "desc" },
-          where: {},
-          take: input.take,
-          select: {
-            id: true,
-          },
-        });
-      }),
-     */
-
   getLatestRecipes: publicProcedure
     .input(z.object({ take: z.number().min(1).max(50) }))
     .query(({ ctx, input }) => {
