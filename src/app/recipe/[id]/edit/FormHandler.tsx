@@ -13,6 +13,10 @@ export default function FormHandler({ recipe }: { recipe: RecipeFormValues }) {
       router.push(`/recipe/${id}`);
       router.refresh();
     },
+    onError: (err) => {
+      console.log(err);
+      toast.error(err.message);
+    },
   });
 
   const onSubmit = (data: RecipeFormValues) => {
@@ -23,7 +27,6 @@ export default function FormHandler({ recipe }: { recipe: RecipeFormValues }) {
       difficulty: data.difficulty,
       tags: data.tags,
       images: data.images,
-      //TODO: Implement step manipulation
       steps: data.steps.map((step) => ({
         description: step.description,
         duration: step.duration,

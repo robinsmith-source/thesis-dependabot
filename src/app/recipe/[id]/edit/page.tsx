@@ -1,6 +1,8 @@
 import { api } from "~/trpc/server";
 import { getServerAuthSession } from "~/server/auth";
 import FormHandler from "./FormHandler";
+import { notFound } from "next/navigation";
+import { UnauthorizedError } from "~/app/lib/exceptions";
 
 export default async function Page({ params }: { params: { id: string } }) {
   const session = await getServerAuthSession();
@@ -8,9 +10,12 @@ export default async function Page({ params }: { params: { id: string } }) {
     id: params.id,
   });
 
-  //TODO: Implement proper handling for that
-  if (!recipe || !session || recipe.authorId !== session?.user.id) {
-    return "NOIDONTTHINKSO";
+  if (!recipe) {
+    notFound();
+  }
+
+  if (!session || recipe.authorId !== session?.user.id) {
+    return new UnauthorizedError();
   }
 
   return <FormHandler recipe={recipe} />;

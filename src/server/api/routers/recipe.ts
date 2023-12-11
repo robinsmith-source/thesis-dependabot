@@ -1,3 +1,4 @@
+import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 
 import {
@@ -129,40 +130,41 @@ export const recipeRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const recipe = await ctx.db.recipe.create({
-        data: {
-          name: input.name,
-          description: input.description,
-          difficulty: input.difficulty,
-          tags: input.tags,
-          images: input.images,
-          author: { connect: { id: ctx.session.user.id } },
-        },
-      });
+      return await ctx.db.$transaction(async (tx) => {
+        const recipe = await tx.recipe.create({
+          data: {
+            name: input.name,
+            description: input.description,
+            difficulty: input.difficulty,
+            tags: input.tags,
+            images: input.images,
+            author: { connect: { id: ctx.session.user.id } },
+          },
+        });
 
-      await Promise.all(
-        input.steps.map((step) => {
-          return ctx.db.recipeStep.create({
-            data: {
-              recipe: { connect: { id: recipe.id } },
-              description: step.description,
-              duration: step.duration,
-              stepType: step.stepType,
-              ingredients: {
-                createMany: {
-                  data: step.ingredients?.map((ingredient) => ({
-                    name: ingredient.name,
-                    quantity: ingredient.quantity,
-                    unit: ingredient.unit,
-                  })),
+        await Promise.all(
+          input.steps.map((step) => {
+            return tx.recipeStep.create({
+              data: {
+                recipe: { connect: { id: recipe.id } },
+                description: step.description,
+                duration: step.duration,
+                stepType: step.stepType,
+                ingredients: {
+                  createMany: {
+                    data: step.ingredients?.map((ingredient) => ({
+                      name: ingredient.name,
+                      quantity: ingredient.quantity,
+                      unit: ingredient.unit,
+                    })),
+                  },
                 },
               },
-            },
-          });
-        }),
-      );
-
-      return recipe.id;
+            });
+          }),
+        );
+        return recipe.id;
+      });
     }),
 
   deleteRecipeImage: protectedProcedure
@@ -174,7 +176,11 @@ export const recipeRouter = createTRPCRouter({
         where: { images: { has: input.key } },
       });
       // make sure there is no recipe with this image
-      if (existingRecipe) throw new Error("Image is used by a recipe");
+      if (existingRecipe)
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "You can't delete images used by a recipe",
+        });
 
       await utapi.deleteFiles(input.key);
     }),
@@ -234,21 +240,67 @@ export const recipeRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const recipe = await ctx.db.recipe.update({
-        where: {
-          id: input.id,
-        },
-        data: {
-          name: input.name,
-          description: input.description,
-          difficulty: input.difficulty,
-          tags: input.tags,
-          images: input.images,
-          author: { connect: { id: ctx.session.user.id } },
-        },
+      const recipe = await ctx.db.recipe.findFirst({
+        where: { id: input.id },
       });
 
-      return recipe.id;
+      if (!recipe)
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Recipe does not exist.",
+        });
+
+      if (recipe.authorId !== ctx.session.user.id) {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "You can only edit your own recipes.",
+        });
+      }
+
+      return await ctx.db.$transaction(async (tx) => {
+        await tx.recipe.update({
+          where: {
+            id: input.id,
+          },
+          data: {
+            name: input.name,
+            description: input.description,
+            difficulty: input.difficulty,
+            tags: input.tags,
+            images: input.images,
+            author: { connect: { id: ctx.session.user.id } },
+          },
+        });
+        await tx.recipeStep.deleteMany({
+          where: {
+            recipeId: input.id,
+          },
+        });
+
+        await Promise.all(
+          input.steps.map((step) => {
+            return tx.recipeStep.create({
+              data: {
+                recipe: { connect: { id: input.id } },
+                description: step.description,
+                duration: step.duration,
+                stepType: step.stepType,
+                ingredients: {
+                  createMany: {
+                    data: step.ingredients?.map((ingredient) => ({
+                      name: ingredient.name,
+                      quantity: ingredient.quantity,
+                      unit: ingredient.unit,
+                    })),
+                  },
+                },
+              },
+            });
+          }),
+        );
+
+        return input.id;
+      });
     }),
 
   deleteRecipe: protectedProcedure
