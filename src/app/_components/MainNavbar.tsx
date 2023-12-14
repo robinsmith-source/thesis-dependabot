@@ -8,10 +8,13 @@ import {
   DropdownMenu,
   DropdownTrigger,
   Image,
+  Link,
   Navbar,
   NavbarBrand,
   NavbarContent,
   NavbarItem,
+  NavbarMenu,
+  NavbarMenuItem,
   NavbarMenuToggle,
 } from "@nextui-org/react";
 import NextLink from "next/link";
@@ -73,6 +76,13 @@ export default function MainNavbar() {
   const { data: session } = useSession();
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const menuItems = [
+    { name: "Home", href: "/" },
+    { name: "Explore Recipes", href: "/explore" },
+    { name: "About(WIP)", href: "/about" },
+    { name: "Contact(WIP)", href: "/contact" },
+  ];
 
   return (
     <Navbar
@@ -146,6 +156,20 @@ export default function MainNavbar() {
           )}
         </NavbarItem>
       </NavbarContent>
+
+      <NavbarMenu>
+        {menuItems.map((item, index) => (
+          <NavbarMenuItem key={`${item.name}-${index}`}>
+            <Link
+              className="w-full text-default-600"
+              href={item.href}
+              size="lg"
+            >
+              {item.name}
+            </Link>
+          </NavbarMenuItem>
+        ))}
+      </NavbarMenu>
     </Navbar>
   );
 }
