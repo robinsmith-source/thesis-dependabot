@@ -12,12 +12,14 @@ import {
   NavbarBrand,
   NavbarContent,
   NavbarItem,
+  NavbarMenuToggle,
 } from "@nextui-org/react";
 import NextLink from "next/link";
 import type { Session } from "next-auth";
 import { useSession } from "next-auth/react";
 import ThemeSwitcher from "~/app/_components/ThemeSwitcher";
 import NextImage from "next/image";
+import { useState } from "react";
 
 function LoginBar({ session }: { session: Session }) {
   return (
@@ -51,11 +53,7 @@ function LoginBar({ session }: { session: Session }) {
         >
           My Profile
         </DropdownItem>
-        <DropdownItem
-          as={NextLink}
-          key="create-recipe"
-          href={`/recipe/create`}
-        >
+        <DropdownItem as={NextLink} key="create-recipe" href={`/recipe/create`}>
           Create Recipe
         </DropdownItem>
         <DropdownItem
@@ -74,25 +72,69 @@ function LoginBar({ session }: { session: Session }) {
 export default function MainNavbar() {
   const { data: session } = useSession();
 
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   return (
-    <Navbar maxWidth="xl" className="bg">
-      <NavbarBrand>
-        <NextLink href="/">
-          <Image
-            as={NextImage}
-            width={50}
-            height={50}
-            src="/images/Logo_round_V2.png"
-            alt="Logo"
-          />
-        </NextLink>
-      </NavbarBrand>
-      <NavbarContent as="div" justify="end">
-        <ThemeSwitcher />
-        {session ? (
-          <LoginBar session={session} />
-        ) : (
-          <NavbarItem>
+    <Navbar
+      maxWidth="xl"
+      className="bg"
+      isMenuOpen={isMenuOpen}
+      onMenuOpenChange={setIsMenuOpen}
+    >
+      <NavbarContent className="sm:hidden" justify="start">
+        <NavbarMenuToggle
+          aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+        />
+      </NavbarContent>
+
+      <NavbarContent justify="center">
+        <NavbarBrand>
+          <NextLink href="/">
+            <Image
+              as={NextImage}
+              width={50}
+              height={50}
+              src="/images/Logo_round_V2.png"
+              alt="Logo"
+            />
+          </NextLink>
+        </NavbarBrand>
+      </NavbarContent>
+
+      <NavbarContent justify="center" className="hidden sm:flex">
+        <NavbarItem as={NextLink} href="/">
+          <Button size="lg" variant="light">
+            Home
+          </Button>
+        </NavbarItem>
+
+        <NavbarItem>
+          <Dropdown>
+            <DropdownTrigger>
+              <Button size="lg" variant="light">
+                Explore
+              </Button>
+            </DropdownTrigger>
+            <DropdownMenu aria-label="Static Actions">
+              <DropdownItem key="Recipes" href="/recipes/public" as={NextLink}>
+                Recipes
+              </DropdownItem>
+              <DropdownItem key="Users" href="/users" as={NextLink}>
+                Users
+              </DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
+        </NavbarItem>
+      </NavbarContent>
+
+      <NavbarContent justify="end">
+        <NavbarItem>
+          <ThemeSwitcher />
+        </NavbarItem>
+        <NavbarItem>
+          {session ? (
+            <LoginBar session={session} />
+          ) : (
             <Button
               as={NextLink}
               color="secondary"
@@ -101,8 +143,8 @@ export default function MainNavbar() {
             >
               Sign in
             </Button>
-          </NavbarItem>
-        )}
+          )}
+        </NavbarItem>
       </NavbarContent>
     </Navbar>
   );
