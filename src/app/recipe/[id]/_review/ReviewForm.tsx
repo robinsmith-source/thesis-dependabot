@@ -31,8 +31,8 @@ export default function ReviewForm({
     defaultValues: {
       rating: 3,
       comment: "",
+      ...formValue,
     },
-    ...formValue,
   });
 
   return (

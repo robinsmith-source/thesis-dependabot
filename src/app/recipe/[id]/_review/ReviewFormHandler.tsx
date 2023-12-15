@@ -110,7 +110,6 @@ export default function ReviewFormHandler({
           review={submittedReview}
           handleEditClick={() => {
             setMode(Modes.EDIT);
-            setSubmittedReview(myReviewQuery);
           }}
         />
       )}
