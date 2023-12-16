@@ -1,18 +1,20 @@
-import type { RecipeDifficulty } from "@prisma/client";
+"use client";
+import { FaStar } from "react-icons/fa6";
+import { RecipeDifficulty } from "@prisma/client";
+import { ReactNode } from "react";
 
+const difMapEnum = { EASY: 1, MEDIUM: 2, HARD: 3, EXPERT: 4 };
 export default function Difficulty({
   difficulty,
 }: {
   difficulty: RecipeDifficulty;
-}) {
-  switch (difficulty) {
-    case "EASY":
-      return <span className="text-green-500">Easy</span>;
-    case "MEDIUM":
-      return <span className="text-yellow-500">Medium</span>;
-    case "HARD":
-      return <span className="text-red-500">Hard</span>;
-    case "EXPERT":
-      return <span className="text-red-900">Expert</span>;
-  }
+}): ReactNode {
+  const difficultyInNumber = difMapEnum[difficulty];
+  return (
+    <>
+      {Array.from(Array(difficultyInNumber), () => (
+        <FaStar className={"mr-1 inline last:mr-0"} />
+      ))}
+    </>
+  );
 }

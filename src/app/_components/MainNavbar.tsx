@@ -51,12 +51,7 @@ function LoginBar({ session }: { session: Session }) {
         >
           My Profile
         </DropdownItem>
-        <DropdownItem
-          as={NextLink}
-          key="create-recipe"
-          href={`/recipe/create`}
-          scroll={false}
-        >
+        <DropdownItem as={NextLink} key="create-recipe" href={`/recipe/create`}>
           Create Recipe
         </DropdownItem>
         <DropdownItem
