@@ -8,10 +8,13 @@ import {
   DropdownMenu,
   DropdownTrigger,
   Image,
+  Link,
   Navbar,
   NavbarBrand,
   NavbarContent,
   NavbarItem,
+  NavbarMenu,
+  NavbarMenuItem,
   NavbarMenuToggle,
 } from "@nextui-org/react";
 import NextLink from "next/link";
@@ -74,6 +77,13 @@ export default function MainNavbar() {
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  const menuItems = [
+    { name: "Home", href: "/" },
+    { name: "Explore Recipes", href: "/explore" },
+    { name: "About(WIP)", href: "/about" },
+    { name: "Contact(WIP)", href: "/contact" },
+  ];
+
   return (
     <Navbar
       maxWidth="xl"
@@ -116,7 +126,7 @@ export default function MainNavbar() {
               </Button>
             </DropdownTrigger>
             <DropdownMenu aria-label="Static Actions">
-              <DropdownItem key="Recipes" href="/explore" as={NextLink}>
+              <DropdownItem key="Recipes" href="/recipe/search" as={NextLink}>
                 Recipes
               </DropdownItem>
               <DropdownItem key="Users" href="/users" as={NextLink}>
@@ -146,6 +156,20 @@ export default function MainNavbar() {
           )}
         </NavbarItem>
       </NavbarContent>
+
+      <NavbarMenu>
+        {menuItems.map((item, index) => (
+          <NavbarMenuItem key={`${item.name}-${index}`}>
+            <Link
+              className="w-full text-default-600"
+              href={item.href}
+              size="lg"
+            >
+              {item.name}
+            </Link>
+          </NavbarMenuItem>
+        ))}
+      </NavbarMenu>
     </Navbar>
   );
 }
