@@ -1,5 +1,6 @@
 import type { Prisma } from "@prisma/client";
 import { convertUnit } from "../../utils";
+import StepTypeChip from "~/app/_components/StepTypeChip";
 
 type RecipeStep = Prisma.RecipeStepGetPayload<{
   include: { ingredients: true };
@@ -22,7 +23,7 @@ export default function RecipeStep({ step }: { step: RecipeStep }) {
         <p className="font-medium">{step.description}</p>
         <div className="pt-0.5 text-gray-500">
           {step.duration} {step.duration === 1 ? "minute" : "minutes"}{" "}
-          <span className="capitalize">({step.stepType.toLowerCase()})</span>
+          <StepTypeChip stepType={step.stepType} />
         </div>
       </td>
     </tr>
