@@ -7,25 +7,27 @@ export default async function Page({ searchParams }: { searchParams?: any }) {
   const { name, difficulty, tags, labels, author } = searchParams;
 
   //query gets adjusted with the information provided from the client component --> as search query
-
   const displayedRecipes = await api.recipe.getRecipesAdvanced.query({
     take: 20,
-    name,
+    name: name,
   });
 
   return (
     <main className="flex flex-col items-center">
-      {/* Here should be the search component as a client component */}
       <RecipeSearchbar />
-      <div className="mt-6 grid w-full grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {displayedRecipes ? (
-          displayedRecipes.map((recipe: Recipe) => (
+      {displayedRecipes && displayedRecipes.length > 0 ? (
+        <div className="mt-6 grid h-full w-full grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {displayedRecipes.map((recipe: Recipe) => (
             <RecipeCard recipeId={recipe.id} key={recipe.id} />
-          ))
-        ) : (
-          <h2>No recipes found...</h2>
-        )}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <div className="mt-20 flex items-center justify-center">
+          <h2 className="text-center text-3xl font-bold text-warning-400">
+            Oh no! You'll starve!
+          </h2>
+        </div>
+      )}
     </main>
   );
 }

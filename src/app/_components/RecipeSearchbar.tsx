@@ -19,7 +19,7 @@ export default function RecipeSearchbar() {
   const searchParams = useSearchParams();
   const [searchQuery, setSearchQuery] = useState<queryInput>();
   const pathname = usePathname();
-  const { replace } = useRouter();
+  const { replace, push } = useRouter();
 
   function handleSearch(searchFilters: queryInput) {
     const params = new URLSearchParams(searchParams);
@@ -34,7 +34,11 @@ export default function RecipeSearchbar() {
       authorId && params.set("authorId", authorId ?? "");
     }
 
-    replace(`${pathname}?${params.toString()}`);
+    if (pathname !== `/recipe/search`) {
+      push(`/recipe/search?${params.toString()}`);
+    } else {
+      replace(`${pathname}?${params.toString()}`);
+    }
   }
 
   function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
@@ -52,6 +56,7 @@ export default function RecipeSearchbar() {
         setSearchQuery({ ...searchQuery, name: event.target.value })
       }
       onKeyDown={handleKeyDown}
+      defaultValue={searchParams.get("name")?.toString()} // ensure that the input field is in sync with the URL
       placeholder="Search recipes..."
       endContent={
         <Button
