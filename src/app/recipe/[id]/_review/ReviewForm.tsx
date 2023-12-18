@@ -1,53 +1,43 @@
 "use client";
-import { Button, Card, Textarea } from "@nextui-org/react";
+import {
+  Button,
+  Card,
+  CardBody,
+  CardFooter,
+  Textarea,
+} from "@nextui-org/react";
 import { Controller, useForm } from "react-hook-form";
-import React from "react";
 import { z } from "zod";
-import { api } from "~/trpc/react";
-import toast from "react-hot-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useRouter } from "next/navigation";
 import RatingInput from "./RatingInput";
+import { CardHeader } from "@nextui-org/card";
+import type { RecipeReview } from ".prisma/client";
 
-export default function ReviewCreator({ recipeId }: { recipeId: string }) {
+export default function ReviewForm({
+  formValue,
+  submit,
+}: {
+  formValue: Partial<RecipeReview>;
+  submit: (recipeForm: { rating: number; comment: string | null }) => void;
+}) {
   const schema = z.object({
     rating: z.number().min(1).max(5),
     comment: z.string(),
   });
 
-  const { control, handleSubmit, reset } = useForm({
+  const { control, handleSubmit } = useForm({
     mode: "onTouched",
     resolver: zodResolver(schema),
     defaultValues: {
-      rating: 1,
+      rating: 3,
       comment: "",
+      ...formValue,
     },
   });
-
-  const router = useRouter();
-  const mutation = api.review.create.useMutation({
-    onSuccess: () => {
-      toast.success("Review created!");
-      reset({
-        rating: 1,
-        comment: "",
-      });
-      //TODO: This may be a hacky way to refresh the page, but it works for now. Consider using a better method like revalidatePath as a saw so far
-      router.refresh();
-    },
-  });
-
-  const onSubmit = (data: { rating: number; comment: string }) => {
-    mutation.mutate({
-      rating: data.rating,
-      comment: data.comment,
-      recipeId: recipeId,
-    });
-  };
 
   return (
-    <Card className="p-4">
-      <form className="flex flex-col gap-4">
+    <Card className={"w-[36rem]"}>
+      <CardHeader className="-mb-4">
         <Controller
           control={control}
           name="rating"
@@ -58,7 +48,8 @@ export default function ReviewCreator({ recipeId }: { recipeId: string }) {
             />
           )}
         />
-
+      </CardHeader>
+      <CardBody>
         <Controller
           control={control}
           name="comment"
@@ -70,13 +61,16 @@ export default function ReviewCreator({ recipeId }: { recipeId: string }) {
               placeholder="I really liked this recipe!"
               isInvalid={!!fieldState.error}
               errorMessage={fieldState.error?.message}
+              value={field.value ?? ""}
             />
           )}
         />
-        <Button color="primary" onClick={handleSubmit(onSubmit)}>
+      </CardBody>
+      <CardFooter className="-mt-4 flex justify-end">
+        <Button color="primary" onClick={handleSubmit(submit)}>
           Submit
         </Button>
-      </form>
+      </CardFooter>
     </Card>
   );
 }

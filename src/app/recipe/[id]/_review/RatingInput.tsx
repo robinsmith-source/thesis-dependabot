@@ -2,7 +2,6 @@ import { useState } from "react";
 import { FaRegStar, FaStar } from "react-icons/fa6";
 import { motion } from "framer-motion";
 
-//TODO: Consider implement a better rating input. This just works for now
 export default function RatingInput({
   value,
   onChange,
@@ -32,8 +31,12 @@ export default function RatingInput({
             key={index}
             onMouseEnter={() => handleMouseEnter(index)}
             onClick={() => handleClick(index)}
-            whileHover={{ scale: 1.2 }}
-            exit={{ scale: 1, transition: { duration: 0.5 } }}
+            whileHover={{
+              scale: 1.2,
+              rotate: 30,
+              transition: { duration: 0.5 },
+            }}
+            exit={{ scale: 1, rotate: 0, transition: { duration: 0.5 } }}
           >
             {index <= (hoverValue || value) ? (
               <FaStar className="fill-orange-400" size={20} />

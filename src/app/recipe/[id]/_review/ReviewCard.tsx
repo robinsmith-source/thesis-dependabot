@@ -1,4 +1,5 @@
 import {
+  Button,
   Card,
   CardBody,
   CardFooter,
@@ -6,43 +7,59 @@ import {
   Link,
   User,
 } from "@nextui-org/react";
-import { RecipeReview } from "@prisma/client";
 import ReviewRating from "~/app/_components/ReviewRating";
 
-type RecipeCardProps = RecipeReview & {
-  author: {
+type ReviewCardProps = {
+  review: {
     id: string;
-    name: string | null;
-    image: string | null;
+    rating: number;
+    comment: string | null;
+    author?: {
+      id: string;
+      name: string | null;
+      image: string | null;
+    };
   };
+  handleEditClick?: () => void;
 };
-export default function ReviewCard({ review }: { review: RecipeCardProps }) {
+
+export default function ReviewCard({
+  review,
+  handleEditClick,
+}: ReviewCardProps) {
   const { rating, comment, author } = review;
 
   return (
-    <Card className="w-96">
-      <CardHeader>
+    <Card className="w-[36rem]">
+      <CardHeader className="-mb-4">
         <ReviewRating rating={rating} />
       </CardHeader>
-      {comment && <CardBody>{comment}</CardBody>}
+      {comment && <CardBody className="px-6">{comment}</CardBody>}
       <CardFooter className="flex justify-end">
-        <User
-          name={
-            <Link
-              color="secondary"
-              href={`/user/${author.id}`}
-              showAnchorIcon
-              size="sm"
-            >
-              {author.name}
-            </Link>
-          }
-          avatarProps={{
-            src: author.image || undefined,
-            showFallback: true,
-            size: "sm",
-          }}
-        />
+        {author && (
+          <User
+            name={
+              <Link
+                color="secondary"
+                href={`/user/${author.id}`}
+                showAnchorIcon
+                size="sm"
+              >
+                {author.name}
+              </Link>
+            }
+            avatarProps={{
+              src: author.image ?? undefined,
+              showFallback: true,
+              size: "sm",
+            }}
+          />
+        )}
+        {handleEditClick && (
+          <Button onClick={handleEditClick} color="secondary">
+            Edit
+          </Button>
+        )}
       </CardFooter>
     </Card>
   );
