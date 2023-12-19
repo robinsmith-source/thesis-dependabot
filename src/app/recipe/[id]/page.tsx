@@ -1,5 +1,4 @@
 import { api } from "~/trpc/server";
-import React from "react";
 import { Button, Link, Chip } from "@nextui-org/react";
 import NextLink from "next/link";
 import { notFound } from "next/navigation";
@@ -21,8 +20,11 @@ export default async function Page({ params }: { params: { id: string } }) {
     <main>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
-          <h1 className="flex items-center gap-2 text-2xl font-bold">
-            {recipe.name}
+          <div className="flex items-center gap-x-2">
+            <h1 className="flex items-center gap-2 text-2xl font-bold">
+              {recipe.name}
+            </h1>
+
             <span className="capitalize">
               ({recipe.difficulty.toLowerCase()})
             </span>
@@ -37,7 +39,7 @@ export default async function Page({ params }: { params: { id: string } }) {
                 <FaPenToSquare />
               </Button>
             )}
-          </h1>
+          </div>
 
           <p>
             created by <br />

@@ -15,7 +15,7 @@ export default async function Page({ params }: { params: { id: string } }) {
   }
 
   if (!session || recipe.authorId !== session?.user.id) {
-    return new UnauthorizedError();
+    throw new UnauthorizedError();
   }
 
   return <FormHandler recipe={recipe} />;
