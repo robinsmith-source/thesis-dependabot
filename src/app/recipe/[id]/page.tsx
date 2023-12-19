@@ -1,8 +1,10 @@
 import { api } from "~/trpc/server";
-import { Chip, Link } from "@nextui-org/react";
+import { Chip, Divider, Link } from "@nextui-org/react";
 import { notFound } from "next/navigation";
 import RecipeStep from "./RecipeStep";
 import IngredientTable from "./IngredientTable";
+import ReviewSection from "~/app/recipe/[id]/_review/ReviewSection";
+import { getServerAuthSession } from "~/server/auth";
 import ImageCarousel from "./ImageCarousel";
 
 export default async function Page({ params }: { params: { id: string } }) {
@@ -10,6 +12,8 @@ export default async function Page({ params }: { params: { id: string } }) {
   if (!recipe) {
     notFound();
   }
+
+  const session = await getServerAuthSession();
 
   return (
     <main>
@@ -39,7 +43,6 @@ export default async function Page({ params }: { params: { id: string } }) {
         <ImageCarousel images={recipe.images} />
         <IngredientTable recipeSteps={recipe.steps} />
       </div>
-
       <div>
         <table>
           <thead>
@@ -59,6 +62,11 @@ export default async function Page({ params }: { params: { id: string } }) {
           <Chip key={tag}>#{tag}</Chip>
         ))}
       </div>
+      <Divider className="my-4" />
+      <ReviewSection
+        recipeId={recipe.id}
+        showReviewForm={recipe.author.id !== session?.user.id}
+      />
     </main>
   );
 }
