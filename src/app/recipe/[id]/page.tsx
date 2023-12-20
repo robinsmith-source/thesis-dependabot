@@ -65,7 +65,9 @@ export default async function Page({ params }: { params: { id: string } }) {
       <Divider className="my-4" />
       <ReviewSection
         recipeId={recipe.id}
-        showReviewForm={recipe.author.id !== session?.user.id}
+        hideReviewForm={
+          recipe.author.id === session?.user.id || session == null
+        }
       />
     </main>
   );
