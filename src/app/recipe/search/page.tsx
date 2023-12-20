@@ -45,7 +45,7 @@ export default async function Page({
       ) : (
         <div className="mt-20 flex items-center justify-center">
           <h2 className="text-center text-3xl font-bold text-warning-400">
-            Oh no! You&apos;ll starve!
+            Oh no! You'll starve!
           </h2>
         </div>
       )}
