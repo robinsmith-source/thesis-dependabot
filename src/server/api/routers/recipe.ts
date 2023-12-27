@@ -367,11 +367,28 @@ export const recipeRouter = createTRPCRouter({
       });
     }),
 
-  deleteRecipe: protectedProcedure
+  delete: protectedProcedure
     .input(z.object({ id: z.string().cuid() }))
     .mutation(async ({ ctx, input }) => {
-      return ctx.db.recipe.delete({
-        where: { id: input.id },
+      const recipe = ctx.db.recipe.findFirst({
+        where: { id: input.id, authorId: ctx.session.user.id },
+      });
+
+      if (!recipe)
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Recipe does not exist.",
+        });
+
+      return ctx.db.$transaction(async (tx) => {
+        await tx.recipe.delete({
+          where: {
+            id: input.id,
+            authorId: ctx.session.user.id,
+          },
+        });
+
+        //TODO: delete images from cdn
       });
     }),
 });

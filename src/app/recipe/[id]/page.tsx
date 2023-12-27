@@ -8,6 +8,7 @@ import { api } from "~/trpc/server";
 import ImageCarousel from "./ImageCarousel";
 import IngredientTable from "./IngredientTable";
 import RecipeStep from "./RecipeStep";
+import ConfirmationButton from "~/app/_components/ConfirmationButton";
 
 export default async function Page({ params }: { params: { id: string } }) {
   const recipe = await api.recipe.get.query({ id: params.id });
@@ -16,7 +17,7 @@ export default async function Page({ params }: { params: { id: string } }) {
   }
 
   const session = await auth();
-
+  console.log(recipe.images);
   return (
     <main>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -29,14 +30,17 @@ export default async function Page({ params }: { params: { id: string } }) {
             </span>
 
             {recipe.authorId === session?.user?.id && (
-              <Button
-                isIconOnly
-                as={NextLink}
-                color="secondary"
-                href={`${params.id}/edit`}
-              >
-                <FaPenToSquare />
-              </Button>
+              <>
+                <Button
+                  isIconOnly
+                  as={NextLink}
+                  color="secondary"
+                  href={`${params.id}/edit`}
+                >
+                  <FaPenToSquare />
+                </Button>
+                <ConfirmationButton recipeId={params.id} />
+              </>
             )}
           </div>
 
