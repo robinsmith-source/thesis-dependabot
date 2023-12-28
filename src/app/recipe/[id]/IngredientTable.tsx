@@ -10,7 +10,7 @@ import {
 } from "@nextui-org/react";
 import React, { useState } from "react";
 import { Prisma, Unit } from "@prisma/client";
-import { convertUnit } from "~/app/utils";
+import { convertUnitName } from "~/app/utils";
 
 const recipeWithIngredients = Prisma.validator<Prisma.RecipeStepDefaultArgs>()({
   include: { ingredients: true },
@@ -34,7 +34,6 @@ export default function IngredientTable({
   className?: string;
 }) {
   const [portionSize, setPortionSize] = useState<number>(1);
-
   const ingredientMap = new Map<string, Ingredient>();
 
   recipeSteps.forEach((step) => {
@@ -52,7 +51,48 @@ export default function IngredientTable({
       }
     });
   });
-  const summedIngredients = Array.from(ingredientMap.values());
+
+  const summarizedIngredients = Array.from(ingredientMap.values()).reduce(
+    (result: Ingredient[], ingredient) => {
+      function convertUnit(
+        convertedUnit: Unit | null,
+        conversionFactor: number,
+      ) {
+        const existingIngredient = result.find(
+          (item) =>
+            item.name === ingredient.name && item.unit === convertedUnit,
+        );
+
+        if (existingIngredient) {
+          existingIngredient.quantity +=
+            ingredient.quantity >= 1000
+              ? ingredient.quantity / conversionFactor
+              : ingredient.quantity;
+        } else if (ingredient.quantity >= 1000) {
+          result.push({
+            ...ingredient,
+            quantity: ingredient.quantity / conversionFactor,
+            unit: convertedUnit,
+          });
+        } else {
+          result.push(ingredient);
+        }
+      }
+
+      switch (ingredient.unit) {
+        case "GRAM":
+          convertUnit("KILOGRAM", 1000);
+          break;
+        case "MILLILITER":
+          convertUnit("MILLILITER", 1000);
+          break;
+        default:
+          result.push(ingredient);
+      }
+      return result;
+    },
+    [],
+  );
 
   return (
     <>
@@ -67,10 +107,10 @@ export default function IngredientTable({
           <TableColumn minWidth={40}>Ingredient</TableColumn>
         </TableHeader>
         <TableBody>
-          {summedIngredients.map((ingredient, index) => (
+          {summarizedIngredients.map((ingredient, index) => (
             <TableRow key={index}>
               <TableCell className="text-right">
-                {ingredient.quantity} {convertUnit(ingredient.unit)}
+                {ingredient.quantity} {convertUnitName(ingredient.unit)}
               </TableCell>
               <TableCell>{ingredient.name}</TableCell>
             </TableRow>

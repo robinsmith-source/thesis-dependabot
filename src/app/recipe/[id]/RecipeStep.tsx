@@ -1,5 +1,5 @@
 import type { Prisma } from "@prisma/client";
-import { convertUnit } from "../../utils";
+import { convertUnitName } from "../../utils";
 
 type RecipeStep = Prisma.RecipeStepGetPayload<{
   include: { ingredients: true };
@@ -12,7 +12,7 @@ export default function RecipeStep({ step }: { step: RecipeStep }) {
         <ul>
           {step.ingredients.map((ingredient) => (
             <li key={ingredient.id}>
-              {ingredient.quantity} {convertUnit(ingredient.unit)}{" "}
+              {ingredient.quantity} {convertUnitName(ingredient.unit)}{" "}
               {ingredient.name}
             </li>
           ))}

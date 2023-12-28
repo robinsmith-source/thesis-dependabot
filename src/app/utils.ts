@@ -12,7 +12,7 @@ const unitConversion = {
   PIECE: "pc",
 };
 
-export function convertUnit(unit: Unit | null): string {
+export function convertUnitName(unit: Unit | null): string {
   if (!unit) {
     return "";
   }
