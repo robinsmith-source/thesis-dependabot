@@ -8,7 +8,7 @@ import { api } from "~/trpc/server";
 import ImageCarousel from "./ImageCarousel";
 import IngredientTable from "./IngredientTable";
 import RecipeStep from "./RecipeStep";
-import ConfirmationButton from "~/app/_components/ConfirmationButton";
+import RecipeDeleteHandler from "~/app/recipe/[id]/RecipeDeleteHandler";
 
 export default async function Page({ params }: { params: { id: string } }) {
   const recipe = await api.recipe.get.query({ id: params.id });
@@ -39,7 +39,7 @@ export default async function Page({ params }: { params: { id: string } }) {
                 >
                   <FaPenToSquare />
                 </Button>
-                <ConfirmationButton recipeId={params.id} />
+                <RecipeDeleteHandler recipeId={recipe.id} />
               </>
             )}
           </div>

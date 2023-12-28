@@ -368,10 +368,10 @@ export const recipeRouter = createTRPCRouter({
     }),
 
   delete: protectedProcedure
-    .input(z.object({ id: z.string().cuid() }))
+    .input(z.object({ recipeId: z.string().cuid() }))
     .mutation(async ({ ctx, input }) => {
       const recipe = ctx.db.recipe.findFirst({
-        where: { id: input.id, authorId: ctx.session.user.id },
+        where: { id: input.recipeId, authorId: ctx.session.user.id },
       });
 
       if (!recipe)
@@ -383,7 +383,7 @@ export const recipeRouter = createTRPCRouter({
       return ctx.db.$transaction(async (tx) => {
         await tx.recipe.delete({
           where: {
-            id: input.id,
+            id: input.recipeId,
             authorId: ctx.session.user.id,
           },
         });
