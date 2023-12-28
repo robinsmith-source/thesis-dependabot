@@ -10,6 +10,7 @@ import {
 import React from "react";
 import { Prisma } from "@prisma/client";
 import { convertUnit } from "~/app/utils";
+import { usePortionSizeContext } from "~/utils/portion-size-provider";
 
 const recipeWithIngredients = Prisma.validator<Prisma.RecipeStepDefaultArgs>()({
   include: { ingredients: true },
@@ -26,6 +27,7 @@ export default function IngredientTable({
   recipeSteps: RecipeStepWithIngredients[];
   className?: string;
 }) {
+  const { portionSize } = usePortionSizeContext();
   return (
     <Table
       aria-label="Ingredient Table"
@@ -42,7 +44,8 @@ export default function IngredientTable({
           step.ingredients.map((ingredient) => (
             <TableRow key={ingredient.id}>
               <TableCell className="text-right">
-                {ingredient.quantity} {convertUnit(ingredient.unit)}
+                {ingredient.quantity * portionSize}{" "}
+                {convertUnit(ingredient.unit)}
               </TableCell>
               <TableCell>{ingredient.name}</TableCell>
             </TableRow>
