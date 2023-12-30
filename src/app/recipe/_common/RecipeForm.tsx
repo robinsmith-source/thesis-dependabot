@@ -159,12 +159,13 @@ export default function RecipeForm({
               />
             )}
           />
+
+          <div className="col-span-2">
+            <TagInput />
+            <StepCreator className="ml-8 mt-8" />
+          </div>
         </div>
 
-        <div className="flex flex-col space-y-4">
-          <TagInput />
-          <StepCreator />
-        </div>
         <Divider className="my-4" />
         <Button color="success" onPress={() => methods.handleSubmit(submit)}>
           Submit

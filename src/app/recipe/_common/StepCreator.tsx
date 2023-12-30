@@ -16,14 +16,14 @@ import { motion } from "framer-motion";
 import IngredientCreator from "./IngredientCreator";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa6";
 
-export default function StepCreator() {
+export default function StepCreator({ className }: { className?: string }) {
   const { control } = useFormContext();
   const { fields, swap, append, remove } = useFieldArray({
     control,
     name: "steps",
   });
   return (
-    <div className="ml-8 space-y-4">
+    <div className={`${className} space-y-4`}>
       <div className="flex gap-2">
         <h2 className="text-lg">Steps</h2>
         <Button
