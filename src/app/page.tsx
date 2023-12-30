@@ -3,6 +3,8 @@ import RecipeCard from "~/app/_components/RecipeCard";
 import { Image, Input } from "@nextui-org/react";
 import NextImage from "next/image";
 
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   const featuredRecipes = await api.recipe.getRecipesAdvanced.query({
     take: 6,
