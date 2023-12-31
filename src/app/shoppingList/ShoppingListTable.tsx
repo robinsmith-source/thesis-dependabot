@@ -9,7 +9,10 @@ import {
   TableRow,
 } from "@nextui-org/react";
 import { convertUnitName } from "~/app/utils";
-import { ShoppingList, ShoppingListItem } from "@prisma/client";
+import type { ShoppingList, ShoppingListItem } from "@prisma/client";
+import ShoppingListFormHandler, {
+  Modes,
+} from "~/app/recipe/[id]/ShoppingListFormHandler";
 
 interface ShoppingListTableProps {
   shoppingList: ShoppingList & {
@@ -22,10 +25,20 @@ export default function ShoppingListTable({
 }: ShoppingListTableProps) {
   return (
     <div>
-      <h2>{shoppingList.name}</h2>
+      <div className="flex items-center justify-between gap-8">
+        <h2>{shoppingList.name}</h2>
+        <ShoppingListFormHandler
+          mode={Modes.EDIT}
+          shoppingList={
+            shoppingList as { id: string; name: string; description: string }
+          }
+        />
+      </div>
+      <p>{shoppingList.description}</p>
+
       <Table
         aria-label="Ingredient Table"
-        className="max-w-xs py-4"
+        className="w-64 py-4"
         isCompact
         isStriped
       >

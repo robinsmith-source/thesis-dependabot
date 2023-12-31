@@ -50,7 +50,7 @@ export default function IngredientTable({
         ),
       );
     }
-  }, [selectedKeys, portionSize]);
+  }, [selectedKeys, portionSize, ingredients, summarizedIngredients]);
 
   onSelect(selectedIngredients);
 
@@ -62,7 +62,7 @@ export default function IngredientTable({
         selectionMode={isSelectable ? "multiple" : "none"}
         selectedKeys={selectedKeys}
         onSelectionChange={(keys) => {
-          //TODO: fix ESLint error
+          //@ts-expect-error TODO: Fix this
           setSelectedKeys(keys);
         }}
         isCompact

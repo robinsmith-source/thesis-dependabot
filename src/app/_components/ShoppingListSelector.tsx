@@ -1,8 +1,10 @@
 "use client";
 
-import { Autocomplete, AutocompleteItem, Button } from "@nextui-org/react";
+import { Autocomplete, AutocompleteItem } from "@nextui-org/react";
 import { type Key, useState } from "react";
-import { FaPlus } from "react-icons/fa6";
+import ShoppingListFormHandler, {
+  Modes,
+} from "~/app/recipe/[id]/ShoppingListFormHandler";
 
 export default function ShoppingListSelector({
   shoppingLists,
@@ -35,9 +37,7 @@ export default function ShoppingListSelector({
           <AutocompleteItem key={item.id}>{item.name}</AutocompleteItem>
         )}
       </Autocomplete>
-      <Button isIconOnly color="success">
-        <FaPlus />
-      </Button>
+      <ShoppingListFormHandler mode={Modes.CREATE} />
     </div>
   );
 }

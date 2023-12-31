@@ -7,7 +7,7 @@ export default async function Page() {
   return (
     <main>
       <h1>Shopping Lists</h1>
-      <section className=" grid grid-cols-1 items-center justify-center gap-8 sm:grid-cols-2 lg:grid-cols-3">
+      <section className="grid grid-cols-1 place-items-center items-center justify-center gap-8 sm:grid-cols-2 lg:grid-cols-3">
         {shoppingLists.map((shoppingList) => (
           <ShoppingListTable
             shoppingList={shoppingList}

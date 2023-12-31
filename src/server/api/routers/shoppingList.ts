@@ -3,6 +3,7 @@ import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { equivalentUnits } from "~/utils/IngredientCalculator";
 import type { Unit } from "@prisma/client";
+import { TRPCError } from "@trpc/server";
 
 export const shoppingListRouter = createTRPCRouter({
   create: protectedProcedure
@@ -18,6 +19,40 @@ export const shoppingListRouter = createTRPCRouter({
           name: input.name,
           description: input.description,
           author: { connect: { id: ctx.session.user.id } },
+        },
+      });
+    }),
+
+  update: protectedProcedure
+    .input(
+      z.object({
+        shoppingListId: z.string().cuid(),
+        name: z.string(),
+        description: z.string().optional(),
+      }),
+    )
+    .mutation(async ({ input, ctx }) => {
+      const existingList = await ctx.db.shoppingList.findFirst({
+        where: {
+          id: input.shoppingListId,
+          authorId: ctx.session.user.id,
+        },
+      });
+
+      if (!existingList) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Shopping List not found",
+        });
+      }
+
+      return ctx.db.shoppingList.update({
+        where: {
+          id: input.shoppingListId,
+        },
+        data: {
+          name: input.name,
+          description: input.description,
         },
       });
     }),
