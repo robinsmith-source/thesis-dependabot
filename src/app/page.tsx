@@ -1,12 +1,15 @@
 import { api } from "~/trpc/server";
-import RecipeCard from "~/app/_components/RecipeCard";
 import { Image } from "@nextui-org/react";
 import NextImage from "next/image";
 import SimpleRecipeSearch from "./_components/search/SimpleRecipeSearch";
+import RecipeCardsSection from "~/app/_components/RecipeCardsSection";
+
+export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const featuredRecipes = await api.recipe.getRecipesAdvanced.query({
-    take: 6,
+  const latestRecipes = await api.recipe.getRecipeCards.query({
+    tags: [],
+    take: 20,
   });
 
   return (
@@ -25,15 +28,7 @@ export default async function Home() {
       <div className="mb-4 w-full md:w-1/2">
         <SimpleRecipeSearch />
       </div>
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {featuredRecipes ? (
-          featuredRecipes.map((recipe) => (
-            <RecipeCard recipeId={recipe.id} key={recipe.id} />
-          ))
-        ) : (
-          <h2>No recipes found...</h2>
-        )}
-      </div>
+      <RecipeCardsSection recipes={latestRecipes} />
     </main>
   );
 }
