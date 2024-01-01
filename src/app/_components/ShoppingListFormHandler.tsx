@@ -122,6 +122,11 @@ export default function ShoppingListFormHandler({
         <ShoppingListFormModal
           isOpen={isOpen}
           onOpenChange={onOpenChange}
+          title={
+            mode === Modes.CREATE
+              ? "Create Shopping List"
+              : "Edit Shopping List"
+          }
           formValue={
             mode === Modes.EDIT
               ? {

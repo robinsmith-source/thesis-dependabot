@@ -17,6 +17,7 @@ import type { ShoppingListFormType } from "~/app/_components/ShoppingListFormHan
 interface ShoppingListFormModalProps {
   onOpenChange: () => void;
   isOpen: boolean;
+  title: string;
   formValue: {
     id: string;
     name: string;
@@ -28,6 +29,7 @@ interface ShoppingListFormModalProps {
 export default function ShoppingListFormModal({
   onOpenChange,
   isOpen,
+  title,
   formValue,
   submit,
 }: ShoppingListFormModalProps) {
@@ -53,7 +55,7 @@ export default function ShoppingListFormModal({
           {(onClose) => (
             <>
               <ModalHeader className="flex flex-col gap-1">
-                Create new shopping list
+                <h3>{title}</h3>
               </ModalHeader>
               <ModalBody>
                 <Controller

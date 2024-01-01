@@ -8,7 +8,7 @@ export default async function Page() {
   return (
     <main className="flex flex-col items-center justify-center space-y-8">
       <div className="flex w-full items-center justify-between">
-        <h1>Shopping Lists</h1>
+        <h1 className="text-2xl font-bold">Shopping Lists</h1>
         <ShoppingListFormHandler />
       </div>
       <ShoppingListTableSection shoppingLists={shoppingLists} />

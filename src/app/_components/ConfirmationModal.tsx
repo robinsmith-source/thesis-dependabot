@@ -29,7 +29,9 @@ export default function ConfirmationModal({
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1">{title}</ModalHeader>
+              <ModalHeader className="flex flex-col gap-1">
+                <h3>{title}</h3>
+              </ModalHeader>
               <ModalBody>
                 <p>{body}</p>
               </ModalBody>
