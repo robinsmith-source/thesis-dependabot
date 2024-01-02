@@ -7,6 +7,7 @@ import { api } from "~/trpc/react";
 import toast from "react-hot-toast";
 import type { Ingredient } from "~/utils/IngredientCalculator";
 import { Button } from "@nextui-org/react";
+import { useRouter } from "next/navigation";
 
 interface ShoppingListHandlerProps {
   isAuthorized?: boolean;
@@ -25,7 +26,7 @@ export default function ShoppingListHandler({
   const [shoppingListId, setShoppingListId] = useState<Key>();
   const [selectedIngredients, setSelectedIngredients] =
     useState<Ingredient[]>();
-
+  const router = useRouter();
   function handleAddItem() {
     createMutation.mutate({
       shoppingListId: shoppingListId as string,
@@ -49,6 +50,8 @@ export default function ShoppingListHandler({
             : "Ingredients"
         } added successfully`,
       );
+      router.push("/shopping-list");
+      router.refresh();
     },
     onError: (error) => {
       toast.error(error.message);
