@@ -1,12 +1,14 @@
-import { api } from "~/trpc/server";
-import { Chip, Divider, Link } from "@nextui-org/react";
+import { Button, Chip, Divider, Link } from "@nextui-org/react";
+import NextLink from "next/link";
 import { notFound } from "next/navigation";
-import RecipeStep from "./RecipeStep";
-import IngredientTable from "./IngredientTable";
+import { FaPenToSquare } from "react-icons/fa6";
 import ReviewSection from "~/app/recipe/[id]/_review/ReviewSection";
-import { getServerAuthSession } from "~/server/auth";
+import { auth } from "auth";
+import { api } from "~/trpc/server";
 import ImageCarousel from "./ImageCarousel";
 import DifficultyChip from "~/app/_components/DifficultyChip";
+import IngredientTable from "./IngredientTable";
+import RecipeStep from "./RecipeStep";
 
 export default async function Page({ params }: { params: { id: string } }) {
   const recipe = await api.recipe.get.query({ id: params.id });
@@ -14,11 +16,37 @@ export default async function Page({ params }: { params: { id: string } }) {
     notFound();
   }
 
-  const session = await getServerAuthSession();
+  const session = await auth();
 
   return (
     <main>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div>
+          <div className="flex items-center gap-x-2">
+            <h1 className="text-2xl font-bold">{recipe.name}</h1>
+
+            <span className="capitalize">
+              ({recipe.difficulty.toLowerCase()})
+            </span>
+
+            {recipe.authorId === session?.user?.id && (
+              <Button
+                isIconOnly
+                as={NextLink}
+                color="secondary"
+                href={`${params.id}/edit`}
+              >
+                <FaPenToSquare />
+              </Button>
+            )}
+          </div>
+
+          <p>
+            created by <br />
+            <Link color="secondary" href={`/user/${recipe.author.id}`}>
+              {recipe.author.name}
+            </Link>
+          </p>
           <div>
               <div className="flex flex-row gap-1">
                   <h1 className="inline-block text-2xl font-bold">
@@ -65,7 +93,9 @@ export default async function Page({ params }: { params: { id: string } }) {
       <Divider className="my-4" />
       <ReviewSection
         recipeId={recipe.id}
-        showReviewForm={recipe.author.id !== session?.user.id}
+        hideReviewForm={
+          recipe.author.id === session?.user?.id || session == null
+        }
       />
     </main>
   );
