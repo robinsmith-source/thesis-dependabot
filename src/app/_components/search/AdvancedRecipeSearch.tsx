@@ -9,7 +9,6 @@ export default function AdvancedRecipeSearch() {
   const pathname = usePathname();
   const router = useRouter();
 
-  // search parameters
   const searchParams = useSearchParams();
 
   const handleSearch = useDebouncedCallback((searchFilters: string) => {
@@ -22,7 +21,6 @@ export default function AdvancedRecipeSearch() {
   }, 333); // debounce in ms
 
   return (
-    <div className="flex w-full flex-row justify-end">
       <Input
         fullWidth
         type="text"
@@ -30,7 +28,7 @@ export default function AdvancedRecipeSearch() {
         placeholder="Search recipes..."
         onValueChange={handleSearch}
         endContent={<FaMagnifyingGlass />}
+        className="w-full"
       />
-    </div>
   );
 }

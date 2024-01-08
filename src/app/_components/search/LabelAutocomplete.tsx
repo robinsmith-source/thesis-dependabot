@@ -17,21 +17,16 @@ type Label = {
   };
 };
 
-type LabelCategory = {
-  name: string;
-};
-
-export default function DifficultyInput({
-  labels,
-  categories,
-}: {
-  labels?: Label[];
-  categories?: LabelCategory[];
-}) {
+export default function DifficultyInput({ labels }: { labels?: Label[] }) {
   const pathname = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [labelInput, setLabelInput] = useState<string[]>([]);
+
+  // Extract unique categories from labels
+  const uniqueCategories = Array.from(
+    new Set(labels?.map((label) => label.category.name)),
+  );
 
   function handleLabelFilter(selectedLabels: string[]) {
     const params = new URLSearchParams(searchParams);
@@ -58,17 +53,20 @@ export default function DifficultyInput({
           }
         }}
       >
-        {categories?.map((category) => (
+        {uniqueCategories?.map((categoryName) => (
           <AutocompleteSection
             showDivider
             className="font-bold"
-            key={category.name}
-            title={category.name}
+            key={categoryName}
+            title={categoryName}
           >
             {labels
-              ?.filter((label) => label.category.name === category.name)
+              ?.filter((label) => label.category.name === categoryName)
               .map((label) => (
-                <AutocompleteItem key={label.name} className="text-foreground-400">
+                <AutocompleteItem
+                  key={label.name}
+                  className="text-foreground-400"
+                >
                   {label.name}
                 </AutocompleteItem>
               )) ?? (
@@ -90,25 +88,22 @@ export default function DifficultyInput({
         )}
       </Autocomplete>
       <div className="flex flex-row flex-wrap items-center justify-start">
-        {
-          // for each label in labelInput, create a chip that can be removed
-          labelInput.map((label) => (
-            <Chip
-              variant="solid"
-              key={label}
-              className="m-1"
-              onClose={() => {
-                const newLabelInput = labelInput.filter(
-                  (input) => input !== label,
-                );
-                setLabelInput(newLabelInput);
-                handleLabelFilter(newLabelInput);
-              }}
-            >
-              {label}
-            </Chip>
-          ))
-        }
+        {labelInput.map((label) => (
+          <Chip
+            variant="solid"
+            key={label}
+            className="m-1"
+            onClose={() => {
+              const newLabelInput = labelInput.filter(
+                (input) => input !== label,
+              );
+              setLabelInput(newLabelInput);
+              handleLabelFilter(newLabelInput);
+            }}
+          >
+            {label}
+          </Chip>
+        ))}
       </div>
     </div>
   );

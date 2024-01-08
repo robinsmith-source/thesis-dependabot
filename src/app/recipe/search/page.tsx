@@ -12,10 +12,6 @@ type Label = {
   };
 };
 
-type LabelCategory = {
-  name: string;
-};
-
 type urlParams = {
   name?: string;
   labels?: string;
@@ -29,8 +25,8 @@ type apiParams = {
   difficulty?: "EASY" | "MEDIUM" | "HARD" | "EXPERT";
   labels?: string[];
   tags?: string;
-  author?: string;
-  orderByName?: "NEWEST" | "OLDEST";
+  authorId?: string;
+  orderBy?: "NEWEST" | "OLDEST";
   groupBy?: "NONE" | "LABELS";
 };
 
@@ -74,34 +70,20 @@ export default async function Page({
   const displayedRecipes =
     await api.recipe.getRecipesAdvanced.query(queryParameters);
 
-  //get all labels from DB for autocomplete items
-  const allLabelNames: Label[] = await prisma.recipeLabel.findMany({
-    select: { name: true, category: { select: { name: true } } },
-  });
-
-  //get all label categories from DB for autocomplete sections
-  const allLabelCategories: LabelCategory[] =
-    await prisma.recipeLabelCategory.findMany({
-      select: { name: true },
-    });
+  // get all labels with their categories from DB for autocomplete items
+const allLabels: Label[] = await prisma.recipeLabel.findMany({
+  select: { name: true, category: true },
+});
 
   return (
     <main className="flex flex-col items-center">
       <div className="flex w-full flex-row items-center justify-between">
         <AdvancedRecipeSearch />
       </div>
-      <FilterAccordion labels={allLabelNames} categories={allLabelCategories} />
-      {displayedRecipes && displayedRecipes.length > 0 ? (
-        <div>
-          <RecipeCardsSection recipes={displayedRecipes} />
-        </div>
-      ) : (
-        <div className="mt-20 flex items-center justify-center">
-          <h2 className="text-center text-3xl font-bold text-warning-400">
-            Oh no! You&apos;ll starve!
-          </h2>
-        </div>
-      )}
+      <FilterAccordion labels={allLabels} />
+      <div>
+        <RecipeCardsSection recipes={displayedRecipes} />
+      </div>
     </main>
   );
 }

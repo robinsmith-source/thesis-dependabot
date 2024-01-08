@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { Accordion, AccordionItem, Card } from "@nextui-org/react";
 import DifficultyInput from "./DifficultyInput";
 import LabelAutocomplete from "./LabelAutocomplete";
@@ -12,16 +11,10 @@ type Label = {
   };
 };
 
-type LabelCategory = {
-  name: string;
-};
-
 export default function FilterAccordion({
   labels,
-  categories,
 }: {
   labels?: Label[];
-  categories?: LabelCategory[];
 }) {
   return (
     <Accordion className="w-full mb-2" variant="light" hideIndicator>
@@ -29,7 +22,7 @@ export default function FilterAccordion({
         <div className="flex w-full flex-col flex-wrap items-start justify-start">
           <div className="flex w-full flex-row items-center justify-start">
             <span className="font-bold text-default-600">Labels</span>
-            <LabelAutocomplete labels={labels} categories={categories} />
+            <LabelAutocomplete labels={labels} />
           </div>
           <div className="flex flex-row items-center justify-start">
             <span className="font-bold text-default-600">Difficulty</span>
