@@ -29,8 +29,8 @@ type apiParams = {
   difficulty?: "EASY" | "MEDIUM" | "HARD" | "EXPERT";
   labels?: string[];
   tags?: string;
-  author?: string;
-  orderByName?: "NEWEST" | "OLDEST";
+  authorId?: string;
+  orderBy?: "NEWEST" | "OLDEST";
   groupBy?: "NONE" | "LABELS";
 };
 
@@ -91,17 +91,9 @@ export default async function Page({
         <AdvancedRecipeSearch />
       </div>
       <FilterAccordion labels={allLabelNames} categories={allLabelCategories} />
-      {displayedRecipes && displayedRecipes.length > 0 ? (
-        <div>
-          <RecipeCardsSection recipes={displayedRecipes} />
-        </div>
-      ) : (
-        <div className="mt-20 flex items-center justify-center">
-          <h2 className="text-center text-3xl font-bold text-warning-400">
-            Oh no! You&apos;ll starve!
-          </h2>
-        </div>
-      )}
+      <div>
+        <RecipeCardsSection recipes={displayedRecipes} />
+      </div>
     </main>
   );
 }
