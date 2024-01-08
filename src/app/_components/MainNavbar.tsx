@@ -76,9 +76,9 @@ function LoginBar({ session }: { session: Session }) {
 export default function MainNavbar() {
   const { data: session } = useSession();
 
+  // NavbarMenu for small screens
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  const menuItems = [
+  const smMenuItems = [
     { name: "Home", href: "/" },
     { name: "Explore Recipes", href: "/recipe/search" },
     { name: "About(WIP)", href: "/about" },
@@ -112,8 +112,8 @@ export default function MainNavbar() {
         </NavbarBrand>
       </NavbarContent>
 
-      <NavbarContent justify="center" className="hidden sm:flex">
-        <NavbarItem className="p-2">
+      <NavbarContent justify="center" className="hidden space-x-4 pl-2 sm:flex">
+        <NavbarItem>
           <Link
             as={NextLink}
             className="w-full text-default-600"
@@ -124,7 +124,7 @@ export default function MainNavbar() {
           </Link>
         </NavbarItem>
 
-        <NavbarItem className="p-2">
+        <NavbarItem>
           <Dropdown>
             <DropdownTrigger>
               <Link className="w-full text-default-600" size="lg">
@@ -164,8 +164,8 @@ export default function MainNavbar() {
       </NavbarContent>
 
       <NavbarMenu>
-        {menuItems.map((item, index) => (
-          <NavbarMenuItem key={`${item.name}-${index}`}>
+        {smMenuItems.map((item, index) => (
+          <NavbarMenuItem key={`${index}`}>
             <Link
               as={NextLink}
               href={item.href}
