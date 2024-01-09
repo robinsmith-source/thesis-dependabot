@@ -38,9 +38,6 @@ export default function ShoppingListHandler({
     });
   }
 
-  //TODO: Should be removed when merging
-  console.log(selectedIngredients);
-  console.log(shoppingListId);
   const createMutation = api.shoppingList.addItems.useMutation({
     onSuccess: () => {
       toast.success(
@@ -58,7 +55,6 @@ export default function ShoppingListHandler({
     },
   });
 
-  //TODO: fix build warning "React Hook useCallback has a missing dependency: 'selectedIngredients'.Either include it or remove the dependency array If 'onSelect' changes too often, find the parent component that defines it and wrap that definition in useCallback. "
   const onSelect = useCallback((selectedIngredients: Ingredient[]) => {
     setSelectedIngredients(selectedIngredients);
   }, []);
