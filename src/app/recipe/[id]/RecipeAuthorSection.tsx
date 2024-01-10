@@ -1,5 +1,4 @@
 import { Link, User } from "@nextui-org/react";
-import React from "react";
 import type { User as UserType } from "@prisma/client";
 import { api } from "~/trpc/server";
 import RecipeCardsSection from "~/app/_components/RecipeCardsSection";
