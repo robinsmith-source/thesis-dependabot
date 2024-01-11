@@ -1,10 +1,9 @@
-import { test as baseTest, expect } from "@playwright/test";
+import { test as baseTest } from "@playwright/test";
 import { PrismaClient } from "@prisma/client";
 import fs from "fs";
 import path from "path";
 import cuid from "cuid";
-import {auth, signIn} from "auth"
-
+import { randomUUID } from "crypto";
 
 export * from "@playwright/test";
 export const test = baseTest.extend<{}, { workerStorageState: string }>({
@@ -36,9 +35,6 @@ export const test = baseTest.extend<{}, { workerStorageState: string }>({
       // can run tests at the same time without interference.
 
       const prisma = new PrismaClient();
-      const date = new Date();
-
-      const sessionToken = `testing-${id}-${cuid()}`;
 
       const account = await prisma.user.upsert({
         where: {
@@ -47,12 +43,6 @@ export const test = baseTest.extend<{}, { workerStorageState: string }>({
         create: {
           name: `Testing ${id}`,
           email: `testing${id}@example.com`,
-          sessions: {
-            create: {
-              expires: new Date(date.getFullYear(), date.getMonth() + 1, 0),
-              sessionToken,
-            },
-          },
           accounts: {
             create: {
               type: "oauth",
@@ -66,12 +56,27 @@ export const test = baseTest.extend<{}, { workerStorageState: string }>({
         update: {},
       });
 
+      const { encode } = await import("@auth/core/jwt");
+
+      const token = await encode({
+        salt: `test-salt-${id}`,
+        secret: process.env.AUTH_SECRET,
+        maxAge: 1000 * 60 * 60,
+        token: {
+          name: `Testing ${id}`,
+          email: `testing${id}@example.com`,
+          picture: "https://placekitten.com/400/400",
+          sub: account.id,
+          jti: randomUUID(),
+        },
+      });
+
       // Perform authentication steps. Replace these actions with your own.
       await page.goto("http://localhost:3000/");
       await page.context().addCookies([
         {
           name: "authjs.session-token",
-          value: sessionToken,
+          value: token,
           domain: "localhost",
           path: "/",
           httpOnly: true,
