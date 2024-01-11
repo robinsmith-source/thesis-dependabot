@@ -90,6 +90,42 @@ export const recipeRouter = createTRPCRouter({
       });
     }),
 
+  getRecipeCardCount: publicProcedure
+    .input(
+      z.object({
+        name: z.string().optional(),
+        difficulty: z.enum(["EASY", "MEDIUM", "HARD", "EXPERT"]).optional(),
+        excludeRecipeId: z.string().cuid().optional(),
+        authorId: z.string().cuid().optional(),
+        tags: z.array(z.string()).optional(),
+        labels: z.array(z.string()).optional(),
+      }),
+    )
+    .query(({ ctx, input }) => {
+      function createLabelQuery(labels: string[]) {
+        return {
+          AND: labels.map((label) => ({
+            labels: {
+              some: {
+                name: label,
+              },
+            },
+          })),
+        };
+      }
+
+      return ctx.db.recipe.count({
+        where: {
+          ...(input.name && { name: { contains: input.name, mode: "insensitive" } }),
+          ...(input.difficulty && { difficulty: input.difficulty }),
+          ...(input.excludeRecipeId && { id: { not: input.excludeRecipeId } }),
+          ...(input.authorId && { authorId: input.authorId }),
+          ...(input.tags && { tags: { hasEvery: input.tags } }),
+          ...(input.labels && createLabelQuery(input.labels)),
+        },
+      });
+    }),
+
   create: protectedProcedure
     .input(
       z.object({
