@@ -2,7 +2,7 @@ import { test as baseTest } from "@playwright/test";
 import { PrismaClient } from "@prisma/client";
 import fs from "fs";
 import path from "path";
-import cuid from "cuid";
+import { createId } from "@paralleldrive/cuid2";
 import { randomUUID } from "crypto";
 
 const { encode } = await import("@auth/core/jwt");
@@ -49,7 +49,7 @@ export const test = baseTest.extend<{}, { workerStorageState: string }>({
             create: {
               type: "oauth",
               provider: "discord",
-              providerAccountId: cuid(),
+              providerAccountId: createId(),
               token_type: "bearer",
               scope: "email identify",
             },
