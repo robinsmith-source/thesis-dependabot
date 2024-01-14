@@ -169,6 +169,38 @@ export const recipeRouter = createTRPCRouter({
       }
     }),
 
+  getFollowingFeed: protectedProcedure
+    .input(
+      z.object({
+        take: z.number().min(1).max(50),
+        skip: z.number().min(0).optional(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      return ctx.db.recipe.findMany({
+        where: {
+          author: {
+            followedBy: {
+              some: {
+                id: ctx.session.user.id,
+              },
+            },
+          },
+        },
+        select: {
+          id: true,
+          name: true,
+          difficulty: true,
+          labels: { select: { name: true } },
+          images: true,
+        },
+        take: input.take,
+        skip: input.skip ?? 0,
+        orderBy: {
+          createdAt: "desc",
+        },
+      });
+    }),
   create: protectedProcedure
     .input(
       z.object({
