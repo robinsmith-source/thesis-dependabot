@@ -1,17 +1,16 @@
 import { api } from "~/trpc/server";
 
 import AdvancedRecipeSearch from "~/app/_components/search/AdvancedRecipeSearch";
-import FilterAccordion from "~/app/_components/search/FilterAccordion";
 import RecipeCardsSection from "~/app/_components/RecipeCardsSection";
 import QueryPagination from "~/app/_components/search/QueryPagination";
 
 type urlParams = {
   name?: string;
   labels?: string;
-  difficulty?: number;
+  difficulty?: string;
   order?: "NEWEST" | "OLDEST";
-  pageSize?: number;
-  page?: number;
+  pageSize?: string;
+  page?: string;
 };
 
 type apiParams = {
@@ -26,7 +25,8 @@ type apiParams = {
 // translate parameters
 const createQueryParams = (params: urlParams) => {
   const { name, labels, difficulty, order, pageSize, page } = params;
-  const queryParameters: apiParams = { take: Number(pageSize) ?? 12 };
+  const numericPageSize = parseInt(pageSize ?? "12");
+  const queryParameters: apiParams = { take: numericPageSize ?? 12};
 
   if (name) queryParameters.name = name;
   if (labels) queryParameters.labels = labels.split(",");
@@ -48,8 +48,9 @@ const createQueryParams = (params: urlParams) => {
     }
   }
   if (order) queryParameters.orderBy = order;
-  if (page) {
-    queryParameters.skip = (page - 1) * (queryParameters.take ?? 0);
+  const numericPage = Number(page);
+  if (numericPage) {
+    queryParameters.skip = (numericPage - 1) * (queryParameters.take ?? 0);
   }
 
   return queryParameters;
@@ -73,13 +74,7 @@ export default async function Page({
 
   return (
     <main className="flex flex-col items-center">
-      <AdvancedRecipeSearch />
-      {queryParameters.take && queryParameters.take >= 25 ? (
-        <QueryPagination pageCount={pageCount} className="mt-2" />
-      ) : (
-        <></>
-      )}
-      <FilterAccordion categories={categories} />
+      <AdvancedRecipeSearch categories={categories} />
       <RecipeCardsSection recipes={displayedRecipeCards} />
       <QueryPagination pageCount={pageCount} className="mt-2" />
     </main>
