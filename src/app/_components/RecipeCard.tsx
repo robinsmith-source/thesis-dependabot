@@ -5,6 +5,7 @@ import NextLink from "next/link";
 import { type Prisma } from "@prisma/client";
 import Difficulty from "~/app/_components/Difficulty";
 import RatingDisplay from "~/app/_components/RatingDisplay";
+import { calculateAverage } from "~/utils/RatingCalculator";
 
 export type RecipeCardProps = Prisma.RecipeGetPayload<{
   select: {
@@ -13,7 +14,7 @@ export type RecipeCardProps = Prisma.RecipeGetPayload<{
     difficulty: true;
     labels: { select: { name: true } };
     images: true;
-    rating: true;
+    reviews: { select: { rating: true } };
   };
 }>;
 
@@ -24,6 +25,8 @@ export default function RecipeCard({
   className?: string;
   recipe: RecipeCardProps;
 }) {
+  const { averageRating } = calculateAverage(recipe.reviews);
+
   return (
     <Card
       className={`${className} group h-48 w-full sm:w-[17rem]`}
@@ -33,7 +36,7 @@ export default function RecipeCard({
       href={`/recipe/${recipe.id}`}
     >
       <CardHeader className="absolute top-1 z-10 flex-col !items-start">
-        {recipe.rating && <RatingDisplay size={18} rating={recipe.rating} />}
+        {recipe.reviews && <RatingDisplay size={18} avg={averageRating} />}
         <h2 className="text-lg font-semibold text-white">{recipe.name}</h2>
         <Difficulty difficulty={recipe.difficulty} />
       </CardHeader>

@@ -12,6 +12,7 @@ import RecipeDeleteHandler from "~/app/recipe/[id]/RecipeDeleteHandler";
 import ShoppingListHandler from "~/app/recipe/[id]/ShoppingListHandler";
 import { PortionSizeProvider } from "~/app/recipe/[id]/PortionSizeContext";
 import RatingDisplay from "~/app/_components/RatingDisplay";
+import { calculateAverage } from "~/utils/RatingCalculator";
 
 export default async function Page({ params }: { params: { id: string } }) {
   const session = await auth();
@@ -30,19 +31,20 @@ export default async function Page({ params }: { params: { id: string } }) {
   }
 
   console.log(recipe.images);
+  const { averageRating } = calculateAverage(recipe.reviews);
   return (
     <main className="space-y-6">
       <PortionSizeProvider>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <div>
-            <div className="flex items-center gap-x-2">
+            <div className="flex flex-col items-start justify-center gap-y-1">
               <h1 className="text-2xl font-bold">{recipe.name}</h1>
+
+              {recipe.reviews && <RatingDisplay avg={averageRating} />}
 
               <span className="capitalize">
                 ({recipe.difficulty.toLowerCase()})
               </span>
-
-              {recipe.rating && <RatingDisplay rating={recipe.rating} />}
 
               {recipe.authorId === session?.user?.id && (
                 <>
