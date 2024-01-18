@@ -6,7 +6,7 @@ import {
   CardFooter,
   Textarea,
 } from "@nextui-org/react";
-import { Controller, useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import RatingInput from "./RatingInput";
@@ -25,15 +25,22 @@ export default function ReviewForm({
     comment: z.string(),
   });
 
-  const { control, handleSubmit } = useForm({
+  const { control, handleSubmit, formState } = useForm({
     mode: "onTouched",
     resolver: zodResolver(schema),
     defaultValues: {
-      rating: 3,
+      rating: 0,
       comment: "",
       ...formValue,
     },
   });
+
+  async function handleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
+    // if ctrl + enter is pressed, submit the form
+    if (event.ctrlKey && event.key === "Enter") {
+      await handleSubmit(submit)();
+    }
+  }
 
   return (
     <Card className="w-[36rem]">
@@ -58,6 +65,7 @@ export default function ReviewForm({
               {...field}
               minRows={3}
               label="Comment"
+              onKeyDown={handleKeyDown}
               placeholder="I really liked this recipe!"
               isInvalid={!!fieldState.error}
               errorMessage={fieldState.error?.message}
@@ -67,7 +75,11 @@ export default function ReviewForm({
         />
       </CardBody>
       <CardFooter className="-mt-4 flex justify-end">
-        <Button color="primary" onClick={handleSubmit(submit)}>
+        <Button
+          color="success"
+          onClick={handleSubmit(submit)}
+          isDisabled={!formState.isValid}
+        >
           Submit
         </Button>
       </CardFooter>
