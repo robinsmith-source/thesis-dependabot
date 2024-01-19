@@ -7,6 +7,7 @@ import { TRPCReactProvider } from "~/trpc/react";
 import React from "react";
 import { Providers } from "~/app/providers";
 import MainNavbar from "~/app/_components/MainNavbar";
+import Footer from "~/app/_components/Footer";
 import SessionProvider from "~/app/_components/SessionProvider";
 import { auth } from "auth";
 import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
@@ -48,6 +49,7 @@ export default async function RootLayout({
                 {children}
               </div>
             </TRPCReactProvider>
+            <Footer />
           </Providers>
         </SessionProvider>
       </body>
