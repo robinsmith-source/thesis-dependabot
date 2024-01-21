@@ -1,5 +1,5 @@
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import NextAuth, { type NextAuthConfig, type DefaultSession } from "next-auth";
+import NextAuth, { type DefaultSession, type NextAuthConfig } from "next-auth";
 import Discord from "next-auth/providers/discord";
 
 import { db } from "~/server/db";
@@ -32,7 +32,7 @@ export const {
     jwt: async (data) => {
       return data.token;
     },
-    session: async ({ session, user, token }) => {
+    session: async ({ session, token }) => {
       // @ts-expect-error
       session.user.id = token.sub;
       console.log(token);
@@ -41,7 +41,7 @@ export const {
   },
   cookies: {
     pkceCodeVerifier: {
-      name: "next-auth.pkce.code_verifier",
+      name: "authjs.pkce.code_verifier",
       options: {
         httpOnly: true,
         sameSite: "none",
