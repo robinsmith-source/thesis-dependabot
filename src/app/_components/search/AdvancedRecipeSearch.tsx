@@ -1,15 +1,7 @@
 "use client";
 
-import {
-  Button,
-  Card,
-  Divider,
-  Input,
-} from "@nextui-org/react";
-import {
-  FaFilter,
-  FaMagnifyingGlass,
-} from "react-icons/fa6";
+import { Button, Card, Divider, Input } from "@nextui-org/react";
+import { FaFilter, FaMagnifyingGlass } from "react-icons/fa6";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useDebouncedCallback } from "use-debounce";
 import DifficultyInput from "./DifficultyInput";
@@ -29,24 +21,9 @@ export default function AdvancedRecipeSearch({
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [isSmallScreen, setIsSmallScreen] = useState(window.innerWidth < 640);
-
-  // responsiveness
-  useEffect(() => {
-    const handleResize = () => {
-      const width = window.innerWidth;
-      setIsSmallScreen(width < 640);
-    };
-
-    window.addEventListener("resize", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
-
   const [filtersCollapsed, setFiltersCollapsed] = useState(true);
 
-  const handleSearch = useDebouncedCallback ((name: string) => {
+  const handleSearch = useDebouncedCallback((name: string) => {
     const params = new URLSearchParams(searchParams);
 
     // reset page
@@ -57,31 +34,39 @@ export default function AdvancedRecipeSearch({
     name ? params.set("name", name) : params.delete("name");
 
     router.replace(`${pathname}?${params.toString()}`);
-  }, 333
-  );
+  }, 333);
 
   return (
     <div className="mb-3 w-full justify-center">
       <Card>
         <div className="m-2 flex flex-row items-center justify-normal space-x-2">
           <Button
-            size="lg"
             variant="flat"
             color="secondary"
             startContent={<FaFilter />}
-            isIconOnly={isSmallScreen}
+            className="hidden w-28 items-center md:flex"
             onClick={() => setFiltersCollapsed(!filtersCollapsed)}
           >
-            <span className="hidden sm:inline">Filters</span>
+            <span>Filters</span>
+          </Button>
+          <Button
+            variant="flat"
+            color="secondary"
+            isIconOnly
+            className="sm:block md:hidden"
+            onClick={() => setFiltersCollapsed(!filtersCollapsed)}
+          >
+            <FaFilter />
           </Button>
           <Input
             type="text"
+            size="sm"
             defaultValue={searchParams.get("name") ?? ""}
             startContent={<FaMagnifyingGlass className="mr-1" />}
             placeholder="Search recipes"
             onValueChange={(value: string) => handleSearch(value)}
           />
-          <SearchViewOptions/>
+          <SearchViewOptions />
         </div>
         <motion.div
           className={
