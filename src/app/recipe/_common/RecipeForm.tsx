@@ -41,8 +41,7 @@ export default function RecipeForm({
     description: z
       .string()
       .min(3, "Descriptions must be at least 3 characters long")
-      .max(500, "Descriptions can only be 500 characters long")
-      .optional(),
+      .max(500, "Descriptions can only be 500 characters long"),
     difficulty: z.enum(["EASY", "MEDIUM", "HARD", "EXPERT"]),
     tags: z
       .array(

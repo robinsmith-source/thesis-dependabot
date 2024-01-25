@@ -124,7 +124,7 @@ export const recipeRouter = createTRPCRouter({
     .input(
       z.object({
         name: z.string().min(3).max(50),
-        description: z.string().min(3).max(300).optional(),
+        description: z.string().min(3).max(300),
         difficulty: z.enum(["EASY", "MEDIUM", "HARD", "EXPERT"]),
         images: z.array(z.string()),
         tags: z
@@ -138,37 +138,48 @@ export const recipeRouter = createTRPCRouter({
           .refine((items) => new Set(items).size === items.length, {
             message: "Must be an array of unique strings",
           }),
-        steps: z.array(
-          z.object({
-            description: z.string().min(3).max(300),
-            duration: z.number().min(1),
-            stepType: z.enum([
-              "PREP",
-              "COOK",
-              "REST",
-              "SEASON",
-              "SERVE",
-              "MIX",
-            ]),
-            ingredients: z.array(
-              z.object({
-                name: z.string().min(1).max(50),
-                quantity: z.number().min(1),
-                unit: z.enum([
-                  "GRAM",
-                  "KILOGRAM",
-                  "LITER",
-                  "MILLILITER",
-                  "TEASPOON",
-                  "TABLESPOON",
-                  "CUP",
-                  "PINCH",
-                  "PIECE",
-                ]),
-              }),
-            ),
-          }),
-        ),
+        steps: z
+          .array(
+            z.object({
+              description: z.string().min(3).max(300),
+              duration: z.number().min(1),
+              stepType: z.enum([
+                "PREP",
+                "COOK",
+                "REST",
+                "SEASON",
+                "SERVE",
+                "MIX",
+              ]),
+              ingredients: z.array(
+                z.object({
+                  name: z.string().min(1).max(50),
+                  quantity: z.number().min(1),
+                  unit: z.enum([
+                    "GRAM",
+                    "KILOGRAM",
+                    "LITER",
+                    "MILLILITER",
+                    "TEASPOON",
+                    "TABLESPOON",
+                    "CUP",
+                    "PINCH",
+                    "PIECE",
+                  ]),
+                }),
+              ),
+            }),
+          )
+          .nonempty("A recipe must have at least one step")
+          .refine(
+            (steps) =>
+              steps.some(
+                (step) => step.ingredients && step.ingredients.length > 0,
+              ),
+            {
+              message: "A recipe must have at least one ingredient",
+            },
+          ),
       }),
     )
 
@@ -249,7 +260,7 @@ export const recipeRouter = createTRPCRouter({
       z.object({
         id: z.string().cuid(),
         name: z.string().min(3).max(50),
-        description: z.string().min(3).max(300).optional(),
+        description: z.string().min(3).max(300),
         difficulty: z.enum(["EASY", "MEDIUM", "HARD", "EXPERT"]),
         images: z.array(z.string()),
         tags: z
@@ -295,7 +306,16 @@ export const recipeRouter = createTRPCRouter({
               ),
             }),
           )
-          .nonempty("A recipe must have at least one step"),
+          .nonempty("A recipe must have at least one step")
+          .refine(
+            (steps) =>
+              steps.some(
+                (step) => step.ingredients && step.ingredients.length > 0,
+              ),
+            {
+              message: "A recipe must have at least one ingredient",
+            },
+          ),
       }),
     )
     .mutation(async ({ ctx, input }) => {
