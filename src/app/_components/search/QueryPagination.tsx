@@ -17,8 +17,8 @@ export default function QueryPagination({ pageCount, className }: QueryPaginatio
     ? parseInt(searchParams.get("page")?.toString() ?? "")
     : 1;
 
-
   const handlePagination = (pageNumber: number) => {
+    pageNumber = Math.max(1, pageNumber);
     const params = new URLSearchParams(searchParams);
     params.set("page", pageNumber.toString());
     router.replace(`${pathname}?${params.toString()}`);
@@ -28,12 +28,13 @@ export default function QueryPagination({ pageCount, className }: QueryPaginatio
     <Pagination
       variant="faded"
       className={className}
-      showControls
+      showControls={pageCount > 1}
       siblings={2}
       initialPage={initialPage}
       page={parseInt(searchParams.get("page")?.toString() ?? "1")}
       total={pageCount}
       onChange={(page) => {
+        page !== initialPage &&
         handlePagination(page);
       }}
     />
