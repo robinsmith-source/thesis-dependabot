@@ -77,7 +77,7 @@ export default function ReviewForm({
       <CardFooter className="-mt-4 flex justify-end">
         <Button
           color="success"
-          onClick={handleSubmit(submit)}
+          onPress={() => handleSubmit(submit)()}
           isDisabled={!formState.isValid}
         >
           Submit

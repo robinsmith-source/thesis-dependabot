@@ -27,6 +27,7 @@ export default function IngredientCreator({
     <div className="ml-8 space-y-4">
       <Accordion defaultExpandedKeys={["Ingredients"]}>
         <AccordionItem
+          textValue={"Ingredients"}
           key="Ingredients"
           startContent={
             <div className="flex gap-2">
@@ -34,7 +35,7 @@ export default function IngredientCreator({
               <Button
                 type="button"
                 size="sm"
-                onPress={() => append({ name: "" })}
+                onPress={() => append({ name: "", quantity: 1, unit: "GRAM" })}
               >
                 Add Ingredient
               </Button>

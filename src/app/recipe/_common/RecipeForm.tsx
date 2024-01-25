@@ -19,6 +19,8 @@ import * as z from "zod";
 import TagInput from "../_common/TagInput";
 import ImageUploader from "../_common/ImageUploader";
 import StepCreator from "../_common/StepCreator";
+import toast from "react-hot-toast";
+import { useEffect } from "react";
 
 export type RecipeFormValues = Recipe & {
   steps: (RecipeStep & {
@@ -54,45 +56,54 @@ export default function RecipeForm({
         message: "Must be an array of unique strings",
       }),
     images: z.array(z.string()),
-    steps: z.array(
-      z.object({
-        description: z
-          .string()
-          .min(3, "Descriptions must be at least 3 characters long")
-          .max(500, "Descriptions can only be 500 characters long"),
-        duration: z.number().min(1, "Duration must be at least 1 minute"),
-        stepType: z.enum(["PREP", "COOK", "REST", "SEASON", "SERVE", "MIX"], {
-          required_error: "Step type is required",
-          invalid_type_error: "Invalid step type",
-        }),
-        ingredients: z.array(
-          z.object({
-            name: z
-              .string()
-              .min(1, "Name must be at least 1 character long")
-              .max(50, "Name can only be 50 characters long"),
-            quantity: z.number().min(1, "Quantity must be at least 1"),
-            unit: z.enum(
-              [
-                "GRAM",
-                "KILOGRAM",
-                "LITER",
-                "MILLILITER",
-                "TEASPOON",
-                "TABLESPOON",
-                "CUP",
-                "PINCH",
-                "PIECE",
-              ],
-              {
-                required_error: "Unit is required",
-                invalid_type_error: "Invalid unit",
-              },
-            ),
+    steps: z
+      .array(
+        z.object({
+          description: z
+            .string()
+            .min(3, "Descriptions must be at least 3 characters long")
+            .max(500, "Descriptions can only be 500 characters long"),
+          duration: z.number().min(1, "Duration must be at least 1 minute"),
+          stepType: z.enum(["PREP", "COOK", "REST", "SEASON", "SERVE", "MIX"], {
+            required_error: "Step type is required",
+            invalid_type_error: "Invalid step type",
           }),
-        ),
-      }),
-    ),
+          ingredients: z.array(
+            z.object({
+              name: z
+                .string()
+                .min(1, "Name must be at least 1 character long")
+                .max(50, "Name can only be 50 characters long"),
+              quantity: z.number().min(1, "Quantity must be at least 1"),
+              unit: z.enum(
+                [
+                  "GRAM",
+                  "KILOGRAM",
+                  "LITER",
+                  "MILLILITER",
+                  "TEASPOON",
+                  "TABLESPOON",
+                  "CUP",
+                  "PINCH",
+                  "PIECE",
+                ],
+                {
+                  required_error: "Unit is required",
+                  invalid_type_error: "Invalid unit",
+                },
+              ),
+            }),
+          ),
+        }),
+      )
+      .nonempty("A recipe must have at least one step")
+      .refine(
+        (steps) =>
+          steps.some((step) => step.ingredients && step.ingredients.length > 0),
+        {
+          message: "A recipe must have at least one ingredient",
+        },
+      ),
   });
 
   const methods = useForm<RecipeFormValues>({
@@ -108,6 +119,12 @@ export default function RecipeForm({
       ...formValue,
     },
   });
+
+  useEffect(() => {
+    if (methods.formState.errors.steps?.message) {
+      toast.error(methods.formState.errors.steps.message.toString());
+    }
+  }, [methods.formState.errors.steps]);
 
   return (
     <FormProvider {...methods}>
@@ -178,7 +195,7 @@ export default function RecipeForm({
         </div>
 
         <Divider className="my-4" />
-        <Button color="success" onClick={methods.handleSubmit(submit)}>
+        <Button color="success" onPress={() => methods.handleSubmit(submit)()}>
           Submit
         </Button>
       </form>

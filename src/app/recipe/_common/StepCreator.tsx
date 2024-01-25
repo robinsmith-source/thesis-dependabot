@@ -29,7 +29,9 @@ export default function StepCreator({ className }: { className?: string }) {
         <Button
           type="button"
           size="sm"
-          onPress={() => append({ description: "" })}
+          onPress={() =>
+            append({ description: "", duration: 1, stepType: "PREP" })
+          }
         >
           Add Step
         </Button>
@@ -67,7 +69,6 @@ export default function StepCreator({ className }: { className?: string }) {
               <Button
                 className="place-self-stretch"
                 color="danger"
-                type="button"
                 variant="flat"
                 size="sm"
                 onPress={() => remove(index)}
