@@ -18,8 +18,8 @@ export default async function Home() {
   });
 
   return (
-    <main className="space-y-32">
-      <section className="pt-8 md:h-full md:pt-16">
+    <main className="space-y-32 py-8 md:py-16">
+      <section className="md:h-full">
         <FadeIn>
           <Card>
             <CardBody>

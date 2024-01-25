@@ -4,4 +4,4 @@ export default function Footer() {
       <p className="text-lg font-medium">© 2023 Goose Chef</p>
     </footer>
   );
-};
+}

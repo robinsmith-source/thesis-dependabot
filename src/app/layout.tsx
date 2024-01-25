@@ -39,19 +39,25 @@ export default async function RootLayout({
     //Currently there is no better solution than suppressing the error message: https://github.com/pacocoursey/next-themes/issues/169
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`font-sans ${inter.variable} flex min-h-screen flex-col justify-between bg-background text-foreground`}
+        className={`font-sans ${inter.variable} bg-background text-foreground`}
       >
         <NextSSRPlugin routerConfig={extractRouterConfig(chefFileRouter)} />
-        <Providers>
-          <MainNavbar session={session} />
-          <TRPCReactProvider headers={headers()}>
-            <div className="mx-auto max-w-screen-xl p-8">
-              <Toaster />
-              {children}
-            </div>
-          </TRPCReactProvider>
-        </Providers>
-        <Footer />
+        <SessionProvider session={session}>
+          <Providers>
+            <TRPCReactProvider headers={headers()}>
+              <div className="flex min-h-screen flex-col justify-between">
+                <div>
+                  <MainNavbar />
+                  <div className="mx-auto max-w-screen-xl p-8">
+                    <Toaster />
+                    {children}
+                  </div>
+                </div>
+                <Footer />
+              </div>
+            </TRPCReactProvider>
+          </Providers>
+        </SessionProvider>
       </body>
     </html>
   );
