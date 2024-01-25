@@ -23,6 +23,7 @@ import { useSession } from "next-auth/react";
 import ThemeSwitcher from "~/app/_components/ThemeSwitcher";
 import NextImage from "next/image";
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 
 function LoginBar({ session }: { session: Session }) {
   if (!session?.user) return null;
@@ -79,6 +80,7 @@ function LoginBar({ session }: { session: Session }) {
 export default function MainNavbar() {
   const { data: session } = useSession();
 
+  const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navbarLinks = [
     { name: "Home", href: "/" },
@@ -118,7 +120,9 @@ export default function MainNavbar() {
             <Link
               as={NextLink}
               href={item.href}
-              className="text-default-600"
+              className={
+                pathname === item.href ? "text-primary-600" : "text-default-600"
+              }
               size="lg"
             >
               {item.name}
