@@ -1,19 +1,16 @@
 "use client";
 
 import { Button } from "@nextui-org/react";
-import { revalidatePath } from "next/cache";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { api } from "~/trpc/react";
 
 export default function RecipeSaveButton({
   recipeId,
-  userId,
   isSaved,
   savedCount,
 }: {
   recipeId: string;
-  userId: string;
   isSaved: boolean;
   savedCount: number;
 }) {
@@ -26,7 +23,6 @@ export default function RecipeSaveButton({
       setSavedStatus(true);
       setIsSaving(false);
       setSaveAdjustment(saveAdjustment + 1);
-      revalidatePath(`/user/${userId}/saved`);
     },
     onError: () => {
       toast.error("Failed to save recipe");
@@ -39,7 +35,6 @@ export default function RecipeSaveButton({
       setSavedStatus(false);
       setIsSaving(false);
       setSaveAdjustment(saveAdjustment - 1);
-      revalidatePath(`/user/${userId}/saved`);
     },
     onError: () => {
       toast.error("Failed to unsave recipe");

@@ -91,7 +91,6 @@ export default async function Page({ params }: { params: { id: string } }) {
       {session?.user && (
         <RecipeSaveButton
           recipeId={recipe.id}
-          userId={session?.user.id}
           isSaved={recipe.savedUsers.length > 0}
           savedCount={recipe._count.savedUsers}
         />
