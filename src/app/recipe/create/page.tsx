@@ -5,6 +5,7 @@ import RecipeForm, { type RecipeFormValues } from "../_common/RecipeForm";
 import { useRouter } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { useSession } from "next-auth/react";
+import type { RouterInputs } from "~/trpc/shared";
 
 export default function RecipeCreate() {
   const router = useRouter();
@@ -34,7 +35,7 @@ export default function RecipeCreate() {
           quantity: ingredient.quantity,
           unit: ingredient.unit,
         })),
-      })),
+      })) as RouterInputs["recipe"]["create"]["steps"],
     });
   };
 
