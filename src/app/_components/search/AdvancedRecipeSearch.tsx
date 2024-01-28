@@ -80,19 +80,20 @@ export default function AdvancedRecipeSearch({
           }}
           transition={{ duration: 0.2 }}
         >
-          <div className="flex flex-col justify-between gap-y-2 px-4 py-3 sm:flex-row sm:items-center">
-            <div className="flex w-full flex-row items-center space-x-2">
+          <div className="flex flex-wrap justify-between gap-y-2 gap-x-4 px-4 py-3 sm:items-center">
+            <label className="flex items-center gap-2">
               <span className="font-bold text-default-600">Difficulty</span>
               <DifficultyInput />
-            </div>
-            <div className="flex w-full flex-row items-center space-x-2">
-              <span className="font-bold text-default-600">Labels</span>
+            </label>
+
+            <label className="flex grow items-center justify-end gap-2">
+              <span className="grow-0 font-bold text-default-600">Labels</span>
               <LabelSelect
                 categories={categories}
                 disabled={filtersCollapsed}
-                className="w-full lg:ml-2 lg:w-2/3"
+                className="max-w-96"
               />
-            </div>
+            </label>
           </div>
         </motion.div>
       </Card>
