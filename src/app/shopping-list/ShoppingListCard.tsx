@@ -71,10 +71,8 @@ export default function ShoppingListCard({
   });
 
   const router = useRouter();
-  console.log(selectedIngredients);
 
   function onAdd(data: { name: string; quantity: number; unit: Unit }) {
-    console.log(typeof data.unit);
     addMutation.mutate({
       shoppingListId: shoppingList.id,
       ingredients: [
