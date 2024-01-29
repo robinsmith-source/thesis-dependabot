@@ -33,7 +33,7 @@ export default function UserSearch() {
             size="sm"
             defaultValue={searchParams.get("name") ?? ""}
             startContent={<FaMagnifyingGlass className="mr-1" />}
-            placeholder="Search recipes"
+            placeholder="Search users"
             onValueChange={(value: string) => handleSearch(value)}
           />
           <SearchViewOptions />

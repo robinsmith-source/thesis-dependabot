@@ -15,7 +15,7 @@ export default function ShoppingListSelector({
   }[];
   onChange: (value: string) => void;
 }) {
-  const [value, setValue] = useState<Key>();
+  const [value, setValue] = useState<Key>("");
 
   return (
     <div className="flex w-full items-center justify-between gap-4 sm:max-w-xs">

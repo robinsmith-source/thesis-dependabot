@@ -71,7 +71,7 @@ export default function ShoppingListHandler({
               onChange={(listId) => setShoppingListId(listId)}
             />
             <Button
-              onPress={() => handleAddItem}
+              onPress={() => handleAddItem()}
               className="w-full"
               isDisabled={
                 !shoppingListId ||
@@ -82,12 +82,12 @@ export default function ShoppingListHandler({
               {!selectedIngredients || selectedIngredients.length < 1
                 ? "Select ingredients"
                 : !shoppingListId
-                ? "Select shopping list"
-                : `Add ${
-                    selectedIngredients?.length <= 1
-                      ? "Ingredient"
-                      : "Ingredients"
-                  } to shopping list`}
+                  ? "Select shopping list"
+                  : `Add ${
+                      selectedIngredients?.length <= 1
+                        ? "Ingredient"
+                        : "Ingredients"
+                    } to shopping list`}
             </Button>
           </>
         )}
