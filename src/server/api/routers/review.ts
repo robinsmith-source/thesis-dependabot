@@ -6,15 +6,16 @@ import {
   protectedProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
+import { ReviewSchema } from "~/app/lib/schemas";
 
 export const reviewRouter = createTRPCRouter({
   create: protectedProcedure
     .input(
-      z.object({
-        rating: z.number().min(1).max(5),
-        comment: z.string().optional(),
-        recipeId: z.string().cuid(),
-      }),
+      ReviewSchema.merge(
+        z.object({
+          recipeId: z.string().cuid(),
+        }),
+      ),
     )
     .mutation(async ({ input, ctx }) => {
       const existingReview = await ctx.db.recipeReview.findFirst({
@@ -101,11 +102,11 @@ export const reviewRouter = createTRPCRouter({
 
   update: protectedProcedure
     .input(
-      z.object({
-        reviewId: z.string().cuid(),
-        rating: z.number().min(1).max(5),
-        comment: z.string().optional(),
-      }),
+      ReviewSchema.merge(
+        z.object({
+          reviewId: z.string().cuid(),
+        }),
+      ),
     )
     .mutation(async ({ input, ctx }) => {
       const existingReview = await ctx.db.recipeReview.findFirst({

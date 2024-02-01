@@ -7,7 +7,7 @@ import {
   Textarea,
 } from "@nextui-org/react";
 import { Controller, useForm } from "react-hook-form";
-import { z } from "zod";
+import { ReviewSchema } from "~/app/lib/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import RatingInput from "./RatingInput";
 import { CardHeader } from "@nextui-org/card";
@@ -20,14 +20,9 @@ export default function ReviewForm({
   formValue: Partial<RecipeReview>;
   submit: (recipeForm: { rating: number; comment: string | null }) => void;
 }) {
-  const schema = z.object({
-    rating: z.number().min(1).max(5),
-    comment: z.string(),
-  });
-
   const { control, handleSubmit, formState } = useForm({
     mode: "onTouched",
-    resolver: zodResolver(schema),
+    resolver: zodResolver(ReviewSchema),
     defaultValues: {
       rating: 0,
       comment: "",

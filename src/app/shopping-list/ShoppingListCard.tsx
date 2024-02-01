@@ -21,7 +21,7 @@ import { motion } from "framer-motion";
 import { Modes } from "~/app/lib/shoppingListModes";
 import { Controller, useForm } from "react-hook-form";
 import UniversalModal from "~/app/_components/UniversalModal";
-import { z } from "zod";
+import { ShoppingListItemSchema } from "~/app/lib/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 export interface ShoppingListTableProps {
@@ -38,31 +38,9 @@ export default function ShoppingListCard({
   );
   const { onOpen, isOpen, onOpenChange, onClose } = useDisclosure();
 
-  const schema = z.object({
-    name: z.string().min(1),
-    quantity: z.number().min(1),
-    unit: z.enum(
-      [
-        "GRAM",
-        "KILOGRAM",
-        "LITER",
-        "MILLILITER",
-        "TEASPOON",
-        "TABLESPOON",
-        "CUP",
-        "PINCH",
-        "PIECE",
-      ],
-      {
-        required_error: "Unit is required",
-        invalid_type_error: "Invalid unit",
-      },
-    ),
-  });
-
   const { control, handleSubmit, reset } = useForm({
     mode: "onTouched",
-    resolver: zodResolver(schema),
+    resolver: zodResolver(ShoppingListItemSchema),
     defaultValues: {
       name: "",
       quantity: 1,

@@ -4,15 +4,11 @@ import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { equivalentUnits } from "~/utils/IngredientCalculator";
 import type { Unit } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
+import { ShoppingListItemSchema, ShoppingListSchema } from "~/app/lib/schemas";
 
 export const shoppingListRouter = createTRPCRouter({
   create: protectedProcedure
-    .input(
-      z.object({
-        name: z.string(),
-        description: z.string().optional(),
-      }),
-    )
+    .input(ShoppingListSchema)
     .mutation(async ({ input, ctx }) => {
       return ctx.db.shoppingList.create({
         data: {
@@ -25,11 +21,11 @@ export const shoppingListRouter = createTRPCRouter({
 
   update: protectedProcedure
     .input(
-      z.object({
-        shoppingListId: z.string().cuid(),
-        name: z.string(),
-        description: z.string().optional(),
-      }),
+      ShoppingListSchema.merge(
+        z.object({
+          shoppingListId: z.string().cuid(),
+        }),
+      ),
     )
     .mutation(async ({ input, ctx }) => {
       const existingList = await ctx.db.shoppingList.findFirst({
@@ -102,23 +98,7 @@ export const shoppingListRouter = createTRPCRouter({
     .input(
       z.object({
         shoppingListId: z.string().cuid(),
-        ingredients: z.array(
-          z.object({
-            name: z.string().min(1),
-            quantity: z.number().min(1),
-            unit: z.enum([
-              "GRAM",
-              "KILOGRAM",
-              "LITER",
-              "MILLILITER",
-              "TEASPOON",
-              "TABLESPOON",
-              "CUP",
-              "PINCH",
-              "PIECE",
-            ]),
-          }),
-        ),
+        ingredients: z.array(ShoppingListItemSchema),
       }),
     )
     .mutation(async ({ input, ctx }) => {

@@ -8,6 +8,7 @@ import {
 } from "~/server/api/trpc";
 import { utapi } from "~/server/uploadthing";
 import { calculateAverage } from "~/utils/RatingCalculator";
+import { RecipeSchema } from "~/app/lib/schemas";
 
 export const recipeRouter = createTRPCRouter({
   get: publicProcedure
@@ -162,7 +163,9 @@ export const recipeRouter = createTRPCRouter({
 
       return ctx.db.recipe.count({
         where: {
-          ...(input.name && { name: { contains: input.name, mode: "insensitive" } }),
+          ...(input.name && {
+            name: { contains: input.name, mode: "insensitive" },
+          }),
           ...(input.difficulty && { difficulty: input.difficulty }),
           ...(input.excludeRecipeId && { id: { not: input.excludeRecipeId } }),
           ...(input.authorId && { authorId: input.authorId }),
@@ -206,68 +209,7 @@ export const recipeRouter = createTRPCRouter({
     }),
 
   create: protectedProcedure
-    .input(
-      z.object({
-        name: z.string().min(3).max(50),
-        description: z.string().min(3).max(300),
-        difficulty: z.enum(["EASY", "MEDIUM", "HARD", "EXPERT"]),
-        images: z.array(z.string()),
-        tags: z
-          .array(
-            z
-              .string({ invalid_type_error: "Tags must be strings" })
-              .min(1)
-              .regex(/^[a-z]+$/, "Tags can only contain lowercase characters"),
-          )
-          .max(10, "A recipe can only have 10 tags")
-          .refine((items) => new Set(items).size === items.length, {
-            message: "Must be an array of unique strings",
-          }),
-        steps: z
-          .array(
-            z.object({
-              description: z.string().min(3).max(300),
-              duration: z.number().min(1),
-              stepType: z.enum([
-                "PREP",
-                "COOK",
-                "REST",
-                "SEASON",
-                "SERVE",
-                "MIX",
-              ]),
-              ingredients: z.array(
-                z.object({
-                  name: z.string().min(1).max(50),
-                  quantity: z.number().min(1),
-                  unit: z.enum([
-                    "GRAM",
-                    "KILOGRAM",
-                    "LITER",
-                    "MILLILITER",
-                    "TEASPOON",
-                    "TABLESPOON",
-                    "CUP",
-                    "PINCH",
-                    "PIECE",
-                  ]),
-                }),
-              ),
-            }),
-          )
-          .nonempty("A recipe must have at least one step")
-          .refine(
-            (steps) =>
-              steps.some(
-                (step) => step.ingredients && step.ingredients.length > 0,
-              ),
-            {
-              message: "A recipe must have at least one ingredient",
-            },
-          ),
-      }),
-    )
-
+    .input(RecipeSchema)
     .mutation(async ({ ctx, input }) => {
       return await ctx.db.$transaction(async (tx) => {
         const recipe = await tx.recipe.create({
@@ -341,68 +283,7 @@ export const recipeRouter = createTRPCRouter({
     }),
 
   update: protectedProcedure
-    .input(
-      z.object({
-        id: z.string().cuid(),
-        name: z.string().min(3).max(50),
-        description: z.string().min(3).max(300),
-        difficulty: z.enum(["EASY", "MEDIUM", "HARD", "EXPERT"]),
-        images: z.array(z.string()),
-        tags: z
-          .array(
-            z
-              .string({ invalid_type_error: "Tags must be strings" })
-              .min(1)
-              .regex(/^[a-z]+$/, "Tags can only contain lowercase characters"),
-          )
-          .max(10, "A recipe can only have 10 tags")
-          .refine((items) => new Set(items).size === items.length, {
-            message: "Must be an array of unique strings",
-          }),
-        steps: z
-          .array(
-            z.object({
-              description: z.string().min(3).max(300),
-              duration: z.number().min(1),
-              stepType: z.enum([
-                "PREP",
-                "COOK",
-                "REST",
-                "SEASON",
-                "SERVE",
-                "MIX",
-              ]),
-              ingredients: z.array(
-                z.object({
-                  name: z.string().min(1).max(50),
-                  quantity: z.number().min(1),
-                  unit: z.enum([
-                    "GRAM",
-                    "KILOGRAM",
-                    "LITER",
-                    "MILLILITER",
-                    "TEASPOON",
-                    "TABLESPOON",
-                    "CUP",
-                    "PINCH",
-                    "PIECE",
-                  ]),
-                }),
-              ),
-            }),
-          )
-          .nonempty("A recipe must have at least one step")
-          .refine(
-            (steps) =>
-              steps.some(
-                (step) => step.ingredients && step.ingredients.length > 0,
-              ),
-            {
-              message: "A recipe must have at least one ingredient",
-            },
-          ),
-      }),
-    )
+    .input(RecipeSchema.merge(z.object({ id: z.string().cuid() })))
     .mutation(async ({ ctx, input }) => {
       const recipe = await ctx.db.recipe.findFirst({
         where: { id: input.id },

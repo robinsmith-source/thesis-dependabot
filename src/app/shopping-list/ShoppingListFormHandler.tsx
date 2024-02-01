@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { Modes } from "~/app/lib/shoppingListModes";
 import UniversalModal from "~/app/_components/UniversalModal";
 import { Controller, useForm } from "react-hook-form";
-import { z } from "zod";
+import { ShoppingListSchema } from "~/app/lib/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 export type ShoppingListFormType = {
@@ -41,14 +41,9 @@ export default function ShoppingListFormHandler(
   const { onOpen, isOpen, onOpenChange, onClose } = useDisclosure();
   const router = useRouter();
 
-  const schema = z.object({
-    name: z.string().min(3),
-    description: z.string().optional(),
-  });
-
   const { control, handleSubmit, reset } = useForm({
     mode: "onTouched",
-    resolver: zodResolver(schema),
+    resolver: zodResolver(ShoppingListSchema),
     defaultValues: {
       name: "",
       description: "",
