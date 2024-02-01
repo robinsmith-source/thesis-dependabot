@@ -20,6 +20,8 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+        ports:
+          - 5432:5432
     env:
       DATABASE_URL: "postgresql://se3:example@postgres:5432/se3?schema=public"
     steps:
